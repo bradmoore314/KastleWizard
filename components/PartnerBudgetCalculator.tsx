@@ -203,141 +203,144 @@ const PartnerBudgetCalculator: React.FC<PartnerBudgetCalculatorProps> = ({ proje
             <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
 
                 {/* Fill in $ Amounts Below Section */}
-                <div className="bg-surface p-6 rounded-lg border border-white/10">
-                    <h2 className="text-xl font-semibold mb-4 text-primary-400">Fill in $ Amounts Below</h2>
+                <div className="bg-gradient-to-br from-surface to-surface/80 p-8 rounded-xl border border-white/10 shadow-lg">
+                    <h2 className="text-2xl font-bold mb-6 text-primary-400 flex items-center gap-3">
+                        <div className="w-2 h-8 bg-primary-400 rounded-full"></div>
+                        Project Financial Inputs
+                    </h2>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Kastle Labor</label>
-                            <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400">$</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="space-y-3">
+                            <label className="text-sm font-semibold text-on-surface">Kastle Labor Cost</label>
+                            <div className="relative group">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-400 text-lg">$</span>
                                 <input
                                     type="number"
                                     min="0"
                                     step="0.01"
                                     value={kastleLabor}
                                     onChange={(e) => setKastleLabor(parseFloat(e.target.value) || 0)}
-                                    className="w-full bg-background p-2 pl-8 rounded border border-white/20 text-right"
+                                    className="w-full bg-background/50 backdrop-blur-sm p-4 pl-10 rounded-lg border border-white/20 text-right text-lg font-semibold focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-all duration-200"
                                     placeholder="0.00"
                                 />
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Kastle Hourly</label>
-                            <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400">$</span>
+                        <div className="space-y-3">
+                            <label className="text-sm font-semibold text-on-surface">Hourly Rate</label>
+                            <div className="relative group">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-400 text-lg">$</span>
                                 <input
                                     type="number"
                                     min="0"
                                     step="0.01"
                                     value={kastleHourly}
                                     onChange={(e) => setKastleHourly(parseFloat(e.target.value) || 0)}
-                                    className="w-full bg-background p-2 pl-8 rounded border border-white/20 text-right"
+                                    className="w-full bg-background/50 backdrop-blur-sm p-4 pl-10 rounded-lg border border-white/20 text-right text-lg font-semibold focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-all duration-200"
                                     placeholder="0.00"
                                 />
                             </div>
-                            <div className="text-xs text-on-surface-variant">
-                                Formula: =IFERROR(C3/D3, "")
-                            </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Kastle Profit</label>
-                            <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400">$</span>
+                        <div className="space-y-3">
+                            <label className="text-sm font-semibold text-on-surface">Profit Margin</label>
+                            <div className="relative group">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-400 text-lg">$</span>
                                 <input
                                     type="number"
                                     min="0"
                                     step="0.01"
                                     value={kastleProfit}
                                     onChange={(e) => setKastleProfit(parseFloat(e.target.value) || 0)}
-                                    className="w-full bg-background p-2 pl-8 rounded border border-white/20 text-right"
+                                    className="w-full bg-background/50 backdrop-blur-sm p-4 pl-10 rounded-lg border border-white/20 text-right text-lg font-semibold focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-all duration-200"
                                     placeholder="0.00"
                                 />
                             </div>
-                            <div className="text-xs text-on-surface-variant">
-                                Formula: =IFERROR(C3-E5, "")
-                            </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Partner Budget</label>
-                            <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400">$</span>
+                        <div className="space-y-3">
+                            <label className="text-sm font-semibold text-on-surface">Partner Budget</label>
+                            <div className="relative group">
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-400 text-lg">$</span>
                                 <input
                                     type="number"
                                     min="0"
                                     step="0.01"
                                     value={partnerBudget}
                                     onChange={(e) => setPartnerBudget(parseFloat(e.target.value) || 0)}
-                                    className="w-full bg-background p-2 pl-8 rounded border border-white/20 text-right"
+                                    className="w-full bg-background/50 backdrop-blur-sm p-4 pl-10 rounded-lg border border-white/20 text-right text-lg font-semibold focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-all duration-200"
                                     placeholder="0.00"
                                 />
-                            </div>
-                            <div className="text-xs text-on-surface-variant">
-                                Formula: =IF(C5="15 percent", ".85", ...)
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Partner Quote Section */}
-                <div className="bg-surface p-6 rounded-lg border border-white/10">
-                    <h2 className="text-xl font-semibold mb-4 text-primary-400">Partner Quote</h2>
+                <div className="bg-gradient-to-br from-surface to-surface/80 p-6 rounded-xl border border-white/10 shadow-lg">
+                    <h2 className="text-xl font-bold mb-4 text-primary-400 flex items-center gap-3">
+                        <div className="w-2 h-6 bg-primary-400 rounded-full"></div>
+                        Partner Quote Configuration
+                    </h2>
 
-                    <div className="flex items-center gap-4">
-                        <label className="text-sm font-medium">Quote Type:</label>
-                        <select
-                            value={partnerQuotePercent}
-                            onChange={(e) => setPartnerQuotePercent(e.target.value)}
-                            className="bg-background p-2 rounded border border-white/20"
-                        >
-                            <option value="15 percent">15 percent</option>
-                            <option value="other">Other</option>
-                        </select>
-                        <div className="text-sm text-on-surface-variant">
-                            Partner gets 85% of Kastle Labor cost
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 bg-background/30 rounded-lg border border-white/10">
+                        <div className="flex items-center gap-3">
+                            <label className="text-sm font-semibold text-on-surface">Quote Type:</label>
+                            <select
+                                value={partnerQuotePercent}
+                                onChange={(e) => setPartnerQuotePercent(e.target.value)}
+                                className="bg-background/50 backdrop-blur-sm p-3 rounded-lg border border-white/20 text-on-surface focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-all duration-200"
+                            >
+                                <option value="15 percent">15% Markup (Partner gets 85%)</option>
+                                <option value="other">Custom Percentage</option>
+                            </select>
+                        </div>
+                        <div className="text-sm text-on-surface-variant bg-primary-400/10 px-3 py-2 rounded-md border border-primary-400/20">
+                            💡 Partner receives 85% of total project value
                         </div>
                     </div>
                 </div>
 
                 {/* Device Section */}
-                <div className="bg-surface p-6 rounded-lg border border-white/10">
-                    <h2 className="text-xl font-semibold mb-4 text-primary-400">Device Calculations</h2>
+                <div className="bg-gradient-to-br from-surface to-surface/80 p-6 rounded-xl border border-white/10 shadow-lg">
+                    <h2 className="text-xl font-bold mb-6 text-primary-400 flex items-center gap-3">
+                        <div className="w-2 h-6 bg-primary-400 rounded-full"></div>
+                        Equipment Specifications
+                    </h2>
 
-                    <div className="space-y-3">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         {Object.entries(DEVICE_CONFIG).map(([key, config]) => (
-                            <div key={key} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center p-3 bg-background rounded border border-white/10">
-                                <div className="font-medium">{config.label}</div>
-
-                                <div className="flex items-center gap-2">
-                                    <span className="text-xs text-on-surface-variant w-8"># of Devices</span>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        value={deviceData[key].quantity}
-                                        onChange={(e) => handleDeviceChange(key, 'quantity', parseInt(e.target.value) || 0)}
-                                        className="w-20 bg-surface p-2 rounded border border-white/20 text-right"
-                                    />
+                            <div key={key} className="bg-background/30 backdrop-blur-sm p-4 rounded-lg border border-white/10 hover:border-primary-400/30 transition-all duration-200">
+                                <div className="flex items-center justify-between mb-3">
+                                    <h3 className="font-semibold text-on-surface">{config.label}</h3>
+                                    <div className="text-right">
+                                        <span className="text-lg font-bold text-green-400">{deviceCalculations[key]?.totalHrs.toFixed(1) || '0.0'}</span>
+                                        <div className="text-xs text-on-surface-variant">total hours</div>
+                                    </div>
                                 </div>
 
-                                <div className="flex items-center gap-2">
-                                    <span className="text-xs text-on-surface-variant w-8">Hrs. per Device</span>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        step="0.5"
-                                        value={deviceData[key].hoursPerDevice}
-                                        onChange={(e) => handleDeviceChange(key, 'hoursPerDevice', parseFloat(e.target.value) || 0)}
-                                        className="w-20 bg-surface p-2 rounded border border-white/20 text-right"
-                                    />
-                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-medium text-on-surface-variant">Quantity</label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            value={deviceData[key].quantity}
+                                            onChange={(e) => handleDeviceChange(key, 'quantity', parseInt(e.target.value) || 0)}
+                                            className="w-full bg-background/50 p-3 rounded border border-white/20 text-right font-semibold focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-all duration-200"
+                                        />
+                                    </div>
 
-                                <div className="text-right">
-                                    <span className="font-bold text-green-400">{deviceCalculations[key]?.totalHrs.toFixed(1) || '0.0'}</span>
-                                    <div className="text-xs text-on-surface-variant">
-                                        {config.cell}: {deviceCalculations[key]?.formula}
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-medium text-on-surface-variant">Hours per Device</label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            step="0.5"
+                                            value={deviceData[key].hoursPerDevice}
+                                            onChange={(e) => handleDeviceChange(key, 'hoursPerDevice', parseFloat(e.target.value) || 0)}
+                                            className="w-full bg-background/50 p-3 rounded border border-white/20 text-right font-semibold focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-all duration-200"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -346,103 +349,125 @@ const PartnerBudgetCalculator: React.FC<PartnerBudgetCalculatorProps> = ({ proje
                 </div>
 
                 {/* Partner Labor Budget Section */}
-                <div className="bg-surface p-6 rounded-lg border border-white/10">
-                    <h2 className="text-xl font-semibold mb-4 text-primary-400">Partner Labor Budget</h2>
+                <div className="bg-gradient-to-br from-surface to-surface/80 p-6 rounded-xl border border-white/10 shadow-lg">
+                    <h2 className="text-xl font-bold mb-6 text-primary-400 flex items-center gap-3">
+                        <div className="w-2 h-6 bg-primary-400 rounded-full"></div>
+                        Partner Labor Budget
+                    </h2>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Days (Team)</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="space-y-3">
+                            <label className="text-sm font-semibold text-on-surface">Project Duration (Days)</label>
                             <input
                                 type="number"
                                 min="0"
                                 value={partnerLaborData.daysTeam}
                                 onChange={(e) => handlePartnerLaborChange('daysTeam', parseInt(e.target.value) || 0)}
-                                className="w-full bg-background p-2 rounded border border-white/20 text-right"
+                                className="w-full bg-background/50 backdrop-blur-sm p-4 rounded-lg border border-white/20 text-right text-lg font-semibold focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-all duration-200"
                                 placeholder="0"
                             />
-                            <div className="text-xs text-on-surface-variant">=E18/16</div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Weeks (2-Tech)</label>
+                        <div className="space-y-3">
+                            <label className="text-sm font-semibold text-on-surface">Duration (Weeks)</label>
                             <input
                                 type="number"
                                 min="0"
                                 step="0.1"
                                 value={partnerLaborData.weeksTech}
                                 onChange={(e) => handlePartnerLaborChange('weeksTech', parseFloat(e.target.value) || 0)}
-                                className="w-full bg-background p-2 rounded border border-white/20 text-right"
+                                className="w-full bg-background/50 backdrop-blur-sm p-4 rounded-lg border border-white/20 text-right text-lg font-semibold focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-all duration-200"
                                 placeholder="0.0"
                             />
-                            <div className="text-xs text-on-surface-variant">=B19/5</div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">$ Per Hr. Rate</label>
+                        <div className="space-y-3">
+                            <label className="text-sm font-semibold text-on-surface">Hourly Rate</label>
                             <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-400">$</span>
+                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-400 text-lg">$</span>
                                 <input
                                     type="number"
                                     min="0"
                                     step="0.01"
                                     value={partnerLaborData.perHrRate}
                                     onChange={(e) => handlePartnerLaborChange('perHrRate', parseFloat(e.target.value) || 0)}
-                                    className="w-full bg-background p-2 pl-8 rounded border border-white/20 text-right"
+                                    className="w-full bg-background/50 backdrop-blur-sm p-4 pl-10 rounded-lg border border-white/20 text-right text-lg font-semibold focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-all duration-200"
                                     placeholder="0.00"
                                 />
                             </div>
-                            <div className="text-xs text-on-surface-variant">=IFERROR(E19/E18, "")</div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium">Total Hrs. Budget</label>
+                        <div className="space-y-3">
+                            <label className="text-sm font-semibold text-on-surface">Total Hours Budget</label>
                             <input
                                 type="number"
                                 min="0"
                                 step="0.01"
                                 value={partnerLaborData.totalHrsBudget}
                                 onChange={(e) => handlePartnerLaborChange('totalHrsBudget', parseFloat(e.target.value) || 0)}
-                                className="w-full bg-background p-2 rounded border border-white/20 text-right"
+                                className="w-full bg-background/50 backdrop-blur-sm p-4 rounded-lg border border-white/20 text-right text-lg font-semibold focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-all duration-200"
                                 placeholder="0.00"
                             />
-                            <div className="text-xs text-on-surface-variant">=SUM(E8:E15)</div>
                         </div>
                     </div>
 
-                    <div className="mt-6 p-4 bg-background rounded border border-white/10">
+                    <div className="mt-6 p-6 bg-gradient-to-r from-primary-400/10 to-green-400/10 rounded-lg border border-primary-400/20">
                         <div className="flex justify-between items-center">
-                            <span className="font-semibold">Partner Labor Budget:</span>
-                            <span className="font-bold text-lg text-green-400">
+                            <div>
+                                <span className="font-bold text-lg text-on-surface">Partner Labor Budget:</span>
+                                <div className="text-sm text-on-surface-variant mt-1">
+                                    {partnerLaborData.totalHrsBudget} hours × ${partnerLaborData.perHrRate}/hour
+                                </div>
+                            </div>
+                            <span className="font-bold text-2xl text-green-400">
                                 {currencyFormatter.format(totals.partnerLaborBudget)}
                             </span>
-                        </div>
-                        <div className="text-xs text-on-surface-variant mt-1">
-                            = {partnerLaborData.totalHrsBudget} hrs × ${partnerLaborData.perHrRate}/hr
                         </div>
                     </div>
                 </div>
 
                 {/* Summary */}
-                <div className="bg-surface p-6 rounded-lg border border-white/10">
-                    <h2 className="text-xl font-semibold mb-4 text-primary-400">Project Summary</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-                        <div>
-                            <div className="text-2xl font-bold text-primary-400">{totals.totalKastleLabor.toFixed(1)}</div>
-                            <div className="text-sm text-on-surface-variant">Total Kastle Hours</div>
-                            <div className="text-xs text-on-surface-variant">=SUM(D8:D15)</div>
+                <div className="bg-gradient-to-br from-surface to-surface/80 p-8 rounded-xl border border-white/10 shadow-lg">
+                    <h2 className="text-2xl font-bold mb-8 text-primary-400 flex items-center gap-3">
+                        <div className="w-2 h-8 bg-primary-400 rounded-full"></div>
+                        Project Financial Summary
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="bg-background/30 backdrop-blur-sm p-6 rounded-lg border border-white/10 text-center">
+                            <div className="text-3xl font-bold text-primary-400 mb-2">{totals.totalKastleLabor.toFixed(1)}</div>
+                            <div className="text-sm font-medium text-on-surface">Total Kastle Hours</div>
+                            <div className="text-xs text-on-surface-variant mt-1">Equipment installation time</div>
                         </div>
-                        <div>
-                            <div className="text-2xl font-bold text-green-400">{currencyFormatter.format(kastleLabor)}</div>
-                            <div className="text-sm text-on-surface-variant">Kastle Labor</div>
+
+                        <div className="bg-background/30 backdrop-blur-sm p-6 rounded-lg border border-white/10 text-center">
+                            <div className="text-3xl font-bold text-green-400 mb-2">{currencyFormatter.format(kastleLabor)}</div>
+                            <div className="text-sm font-medium text-on-surface">Kastle Labor Cost</div>
+                            <div className="text-xs text-on-surface-variant mt-1">Base labor investment</div>
                         </div>
-                        <div>
-                            <div className="text-2xl font-bold text-green-400">{currencyFormatter.format(totals.partnerBudget)}</div>
-                            <div className="text-sm text-on-surface-variant">Partner Budget</div>
-                            <div className="text-xs text-on-surface-variant">=85% of Kastle Labor</div>
+
+                        <div className="bg-background/30 backdrop-blur-sm p-6 rounded-lg border border-white/10 text-center">
+                            <div className="text-3xl font-bold text-green-400 mb-2">{currencyFormatter.format(totals.partnerBudget)}</div>
+                            <div className="text-sm font-medium text-on-surface">Partner Budget</div>
+                            <div className="text-xs text-on-surface-variant mt-1">85% partner allocation</div>
                         </div>
-                        <div>
-                            <div className="text-2xl font-bold text-green-400">{currencyFormatter.format(totals.partnerLaborBudget)}</div>
-                            <div className="text-sm text-on-surface-variant">Partner Labor Budget</div>
+
+                        <div className="bg-background/30 backdrop-blur-sm p-6 rounded-lg border border-white/10 text-center">
+                            <div className="text-3xl font-bold text-green-400 mb-2">{currencyFormatter.format(totals.partnerLaborBudget)}</div>
+                            <div className="text-sm font-medium text-on-surface">Partner Labor Budget</div>
+                            <div className="text-xs text-on-surface-variant mt-1">Project execution budget</div>
+                        </div>
+                    </div>
+
+                    <div className="mt-8 p-6 bg-gradient-to-r from-green-400/10 to-primary-400/10 rounded-lg border border-green-400/20">
+                        <div className="text-center">
+                            <div className="text-sm font-medium text-on-surface-variant mb-2">Total Project Value</div>
+                            <div className="text-4xl font-bold text-green-400">
+                                {currencyFormatter.format(kastleLabor + totals.partnerBudget + totals.partnerLaborBudget)}
+                            </div>
+                            <div className="text-sm text-on-surface-variant mt-2">
+                                Kastle Labor + Partner Budget + Partner Labor Budget
+                            </div>
                         </div>
                     </div>
                 </div>

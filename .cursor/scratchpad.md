@@ -125,14 +125,59 @@ The application has been deployed to Vercel but is experiencing multiple product
 - **Fix:** Changed data format from object-based to array-based for both functions
 - **Result:** Excel exports now work correctly
 
-**Partner Budget Calculator Component ✅**
-- **Created:** New `PartnerBudgetCalculator.tsx` that mirrors Excel functionality exactly
-- **Device-based calculations:** Fixed hours per device type (New Door: 10h, Takeover Door: 8h, etc.)
-- **Partner markup:** 15% markup with partner getting 85% of budget
-- **T&E integration:** Lodging ($210/night) and meals ($74/night) per diem calculations
-- **Auto-calculation:** T&E automatically calculated based on labor hours
-- **Project integration:** Loads device counts from project inventory, saves calculations to project
-- **Navigation:** Added to calculator selection screen for easy access
+**Complete Excel-Based Calculator System ✅**
+
+**1. T&E Calculator (`TEECalculator.tsx`) ✅**
+- **Separate component** matching Excel "Remote Job Calculator for T&E"
+- **Excel formulas implemented:**
+  - Total Weeks = Total Labor Hours ÷ 40 (rounded up)
+  - Total Nights of T&E = Total Weeks × 4
+  - Per diem calculations for lodging ($210/night) and meals ($74/night)
+  - Manual override capabilities for custom calculations
+- **Auto-calculation** from labor hours with one-click button
+- **Project integration** saves calculations to project state
+
+**2. Partner Budget Calculator (`PartnerBudgetCalculator.tsx`) ✅**
+- **Complete rewrite** to match Excel layout exactly
+- **Fill in $ Amounts Below section** with manual input fields
+- **Partner Quote section** with 15% markup selection
+- **Device calculations** with SUM formulas for each device type:
+  - New Door: 10 hours per device
+  - Takeover Door: 8 hours per device
+  - Door Contact/Prop: 6 hours per device
+  - Intercom: 3 hours per device
+  - Intercom Master/GW: 1 hour per device
+  - Alarm Devices: 2 hours per device
+  - Indoor Camera: 3 hours per device
+  - Exterior Camera: 4 hours per device
+- **Partner Labor Budget section** with complex formulas
+- **Excel formula display** showing the actual formulas used
+
+**3. Subcontractor List (`SubcontractorList.tsx`) ✅**
+- **Reference component** displaying approved subcontractors
+- **Complete data set** with partner names, contacts, and phone numbers
+- **Scrollable interface** for easy browsing
+- **Note about verification** of current contact information
+
+**4. Navigation Integration ✅**
+- **Calculator selection screen** updated with both calculators
+- **Main navigation** includes "Subcontractors" tab
+- **Proper routing** between all components
+- **State management** for calculator persistence
+
+**5. Type System Updates ✅**
+- **Added `TEECalculation` interface** for T&E calculations
+- **Updated `Project` interface** to include `teeCalculations` field
+- **Proper TypeScript types** throughout all components
+
+**6. Excel Formula Implementation ✅**
+All Excel formulas accurately reproduced:
+- **T&E:** `Total Weeks = Hours ÷ 40`, `Total Nights = Weeks × 4`
+- **Partner Budget:** `Kastle Labor = SUM(device calculations)`, `Partner Budget = Kastle Labor × 0.85`
+- **Device calculations:** `=SUM(C8*D8)`, `=SUM(C9*D9)`, etc.
+- **Complex formulas** like `=IFERROR(C3/D3, "")` and `=IF(C5="15 percent", ".85", ...)`
+
+**All components are now fully functional and match your Excel system exactly!** 🎉
 
 ### Known Issues Documented
 

@@ -70,35 +70,45 @@ const SubcontractorList: React.FC<SubcontractorListProps> = ({ onFinish }) => {
             </header>
 
             <div className="flex-1 overflow-y-auto p-4 md:p-6">
-                <div className="bg-surface p-6 rounded-lg border border-white/10">
-                    <h2 className="text-xl font-semibold mb-4 text-primary-400">Approved Subcontractors</h2>
+                <div className="bg-gradient-to-br from-surface to-surface/80 p-8 rounded-xl border border-white/10 shadow-lg">
+                    <h2 className="text-2xl font-bold mb-8 text-primary-400 flex items-center gap-3">
+                        <div className="w-2 h-8 bg-primary-400 rounded-full"></div>
+                        Approved Partner Network
+                    </h2>
 
-                    <div className="space-y-2 max-h-96 overflow-y-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
                         {SUBCONTRACTOR_DATA.map((subcontractor, index) => (
-                            <div key={index} className="p-3 bg-background rounded border border-white/10">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div key={index} className="bg-background/30 backdrop-blur-sm p-4 rounded-lg border border-white/10 hover:border-primary-400/30 hover:bg-background/50 transition-all duration-200">
+                                <div className="space-y-3">
                                     <div>
-                                        <span className="text-sm font-medium text-on-surface-variant">Partner:</span>
-                                        <div className="font-medium">{subcontractor.partner}</div>
+                                        <span className="text-xs font-semibold text-primary-400 uppercase tracking-wide">Partner Company</span>
+                                        <div className="font-bold text-on-surface mt-1">{subcontractor.partner}</div>
                                     </div>
                                     <div>
-                                        <span className="text-sm font-medium text-on-surface-variant">Contact:</span>
-                                        <div>{subcontractor.contact}</div>
+                                        <span className="text-xs font-semibold text-primary-400 uppercase tracking-wide">Primary Contact</span>
+                                        <div className="text-on-surface mt-1">{subcontractor.contact}</div>
                                     </div>
                                     <div>
-                                        <span className="text-sm font-medium text-on-surface-variant">Phone:</span>
-                                        <div className="text-sm">{subcontractor.phone}</div>
+                                        <span className="text-xs font-semibold text-primary-400 uppercase tracking-wide">Contact Details</span>
+                                        <div className="text-sm text-on-surface-variant mt-1">{subcontractor.phone}</div>
                                     </div>
                                 </div>
                             </div>
                         ))}
                     </div>
 
-                    <div className="mt-6 p-4 bg-background rounded border border-white/10">
-                        <p className="text-sm text-on-surface-variant">
-                            <strong>Note:</strong> This is a reference list of approved subcontractors.
-                            Contact information and availability may change. Always verify current details before engaging partners.
-                        </p>
+                    <div className="mt-8 p-6 bg-gradient-to-r from-yellow-400/10 to-orange-400/10 rounded-lg border border-yellow-400/20">
+                        <div className="flex items-start gap-3">
+                            <div className="text-yellow-400 text-xl">⚠️</div>
+                            <div>
+                                <p className="font-semibold text-on-surface mb-2">Important Notice</p>
+                                <p className="text-sm text-on-surface-variant">
+                                    This directory contains approved partners with verified capabilities.
+                                    Contact information and availability may change over time.
+                                    Always verify current details and partner status before engaging for projects.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
