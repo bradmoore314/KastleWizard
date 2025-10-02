@@ -69,8 +69,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `https://esm.sh/pdfjs-dist@4.5.136/buil
 const GENERAL_NOTES_ID = 'project-level-inventory';
 const DEFAULT_SHAREPOINT_URL = 'https://prod-105.westus.logic.azure.com:443/workflows/2b6ceb55b9c847668e4df2949b57ab09/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-KifdqtI28Zch9FZC_vOu92Xx-fL51iUqmKTFR5PPnk';
 
-type View = 'editor' | 'list' | 'tools' | 'checklist' | 'gallery' | 'elevator-letter' | 'audit-log' | 'subcontractors' | 'partner-directory';
-type CalculatorType = 'gateway' | 'conduit' | 'labor' | 'partner-budget' | 'tee';
+type View = 'editor' | 'list' | 'tools' | 'checklist' | 'gallery' | 'audit-log' | 'partner-directory';
+type CalculatorType = 'gateway' | 'conduit' | 'labor' | 'partner-budget' | 'tee' | 'subcontractors' | 'elevator-letter';
 
 // Wrapper for new calculators
 const CalculatorWrapper: React.FC<{ title: string, onBack: () => void, children: React.ReactNode }> = ({ title, onBack, children }) => (
@@ -92,14 +92,16 @@ const CalculatorSelectionScreen: React.FC<{ onSelect: (calc: CalculatorType) => 
         { key: 'conduit', title: 'Conduit Calculator', description: 'Estimate material and labor costs for conduit runs.', Icon: ConduitIcon },
         { key: 'labor', title: 'Labor Calculator', description: 'Estimate labor hours for various installation tasks.', Icon: AuditLogIcon },
         { key: 'partner-budget', title: 'Partner Budget Calculator', description: 'Calculate partner budgets with T&E for project proposals.', Icon: CalculatorIcon },
-        { key: 'tee', title: 'T&E Calculator', description: 'Calculate travel & expense costs for remote jobs.', Icon: CalculatorIcon }
+        { key: 'tee', title: 'T&E Calculator', description: 'Calculate travel & expense costs for remote jobs.', Icon: CalculatorIcon },
+        { key: 'subcontractors', title: 'Subcontractors', description: 'Browse and search approved subcontractor partners.', Icon: AuditLogIcon },
+        { key: 'elevator-letter', title: 'Elevator Letter', description: 'Generate professional elevator specification letters.', Icon: ElevatorLetterIcon }
     ];
 
     return (
         <div className="w-full h-full p-4 md:p-8 flex flex-col items-center justify-center bg-background">
             <div className="max-w-4xl text-center">
-                <h1 className="text-4xl font-bold mb-2">Calculators</h1>
-                <p className="text-lg text-on-surface-variant mb-8">Select a tool to assist with project estimation.</p>
+                <h1 className="text-4xl font-bold mb-2">Tools</h1>
+                <p className="text-lg text-on-surface-variant mb-8">Select a tool to assist with project planning and estimation.</p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {calcOptions.map(({ key, title, description, Icon }) => (
                         <button key={key} onClick={() => onSelect(key as any)} className="bg-surface p-8 rounded-xl border border-white/10 text-left hover:border-primary-500 hover:bg-primary-950/30 transition-all duration-300 transform hover:-translate-y-1">
@@ -1731,10 +1733,6 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
                   <span className="hidden sm:inline">Tools</span>
                   <span className="sm:hidden">Tools</span>
                 </button>
-                <button onClick={() => setView('elevator-letter')} className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-semibold transition-colors ${view === 'elevator-letter' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'} min-h-[36px]`} title="Elevator Letter">
-                  <span className="hidden sm:inline">Elevator Letter</span>
-                  <span className="sm:hidden">Letter</span>
-                </button>
                 <button onClick={() => setView('gallery')} className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-semibold transition-colors ${view === 'gallery' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'} min-h-[36px]`} title="Gallery">
                   <span className="hidden sm:inline">Gallery</span>
                   <span className="sm:hidden">Gallery</span>
@@ -1746,14 +1744,6 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
                 <button onClick={() => setView('audit-log')} className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-semibold transition-colors ${view === 'audit-log' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'} min-h-[36px]`} title="Audit Log">
                   <span className="hidden sm:inline">Audit Log</span>
                   <span className="sm:hidden">Audit</span>
-                </button>
-                <button onClick={() => setView('subcontractors')} className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-semibold transition-colors ${view === 'subcontractors' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'} min-h-[36px]`} title="Subcontractors">
-                  <span className="hidden sm:inline">Subcontractors</span>
-                  <span className="sm:hidden">Subs</span>
-                </button>
-                <button onClick={() => setView('partner-directory')} className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-semibold transition-colors ${view === 'partner-directory' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'} min-h-[36px]`} title="Partner Directory">
-                  <span className="hidden sm:inline">Partner Directory</span>
-                  <span className="sm:hidden">Partners</span>
                 </button>
               </div>
             </div>
@@ -1935,13 +1925,15 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
                     <PartnerBudgetCalculator project={activeProject} onFinish={() => setActiveCalculator(null)} />
                 ) : activeCalculator === 'tee' ? (
                     <TEECalculator project={activeProject} onFinish={() => setActiveCalculator(null)} />
+                ) : activeCalculator === 'subcontractors' ? (
+                    <SubcontractorList onFinish={() => setActiveCalculator(null)} />
+                ) : activeCalculator === 'elevator-letter' ? (
+                    <ElevatorLetterDrafter project={activeProject} onFinish={() => setActiveCalculator(null)} />
                 ) : (
                     <CalculatorSelectionScreen onSelect={(calc) => setActiveCalculator(calc)} />
                 )
             ) : view === 'partner-directory' ? (
                 <PartnerDirectory onFinish={() => setView('list')} />
-            ) : view === 'elevator-letter' ? (
-                <ElevatorLetterDrafter project={activeProject} onFinish={() => setView('list')} />
             ) : view === 'gallery' ? (
                 <GalleryView
                     images={preparedImages}
