@@ -585,25 +585,25 @@ const autoSizeColumns = (ws: xlsx.WorkSheet, data: any[]) => {
 
 const createGatewayCalcsWorksheet = (calcs: GatewayCalculation[]): xlsx.WorkSheet | null => {
     if (calcs.length === 0) return null;
-    const data: any[] = [];
+    const data: any[][] = [];
     calcs.forEach(calc => {
-        data.push({ A: `Calculation: ${calc.name}`, B: '' });
-        data.push({ A: '--- Camera Inputs ---', B: '' });
-        data.push({ A: 'Name', B: 'Lens Count', C: 'Streaming Res (MP)', D: 'Recording Res (MP)', E: 'Frame Rate (fps)', F: 'Storage (Days)' });
+        data.push([`Calculation: ${calc.name}`, '']);
+        data.push(['--- Camera Inputs ---', '']);
+        data.push(['Name', 'Lens Count', 'Streaming Res (MP)', 'Recording Res (MP)', 'Frame Rate (fps)', 'Storage (Days)']);
         calc.cameras.forEach(cam => {
-            data.push({ A: cam.name, B: cam.lensCount, C: cam.streamingResolution, D: cam.recordingResolution, E: cam.frameRate, F: cam.storageDays });
+            data.push([cam.name, cam.lensCount, cam.streamingResolution, cam.recordingResolution, cam.frameRate, cam.storageDays]);
         });
-        data.push({ A: '', B: '' });
-        data.push({ A: '--- Gateway Configuration ---' });
+        data.push(['', '']);
+        data.push(['--- Gateway Configuration ---']);
         calc.gateways.forEach(gw => {
-            data.push({ A: `Gateway #${gw.id} (${gw.type})`, B: 'Assigned Streams:' });
-            gw.assignedStreams.forEach(s => data.push({ B: s.name }));
+            data.push([`Gateway #${gw.id} (${gw.type})`, 'Assigned Streams:']);
+            gw.assignedStreams.forEach(s => data.push(['', s.name]));
         });
         if (calc.unassignedStreams.length > 0) {
-            data.push({ A: 'Unassigned Streams:' });
-            calc.unassignedStreams.forEach(s => data.push({ B: s.name }));
+            data.push(['Unassigned Streams:']);
+            calc.unassignedStreams.forEach(s => data.push(['', s.name]));
         }
-        data.push({ A: '', B: '' }); // Spacer row
+        data.push(['', '']); // Spacer row
     });
     const ws = xlsx.utils.aoa_to_sheet(data);
     ws['!cols'] = [{ wch: 30 }, { wch: 30 }, { wch: 20 }, { wch: 20 }, { wch: 20 }, { wch: 20 }];
@@ -628,15 +628,15 @@ const createConduitCalcsWorksheet = (calcs: ConduitCalculation[]): xlsx.WorkShee
 
 const createLaborCalcsWorksheet = (calcs: LaborCalculation[]): xlsx.WorkSheet | null => {
     if (calcs.length === 0) return null;
-    const data: any[] = [];
+    const data: any[][] = [];
      calcs.forEach(calc => {
-        data.push({ A: `Calculation: ${calc.name}`, B: '' });
-        data.push({ A: 'Task', B: 'Quantity', C: 'Hours/Unit', D: 'Total Hours' });
+        data.push([`Calculation: ${calc.name}`, '']);
+        data.push(['Task', 'Quantity', 'Hours/Unit', 'Total Hours']);
         // This is a placeholder; a full implementation would need TASK_DATA.
         // For now, we'll just show the totals.
-        data.push({ A: 'Total Specialist Hours', B: '...', C: 'Cost', D: '...' });
-        data.push({ A: 'Total Installer Hours', B: '...', C: 'Cost', D: '...' });
-        data.push({ A: '---', B: '---' });
+        data.push(['Total Specialist Hours', '...', 'Cost', '...']);
+        data.push(['Total Installer Hours', '...', 'Cost', '...']);
+        data.push(['---', '---']);
     });
     const ws = xlsx.utils.aoa_to_sheet(data);
     ws['!cols'] = [{ wch: 40 }, { wch: 15 }, { wch: 15 }, { wch: 15 }];
