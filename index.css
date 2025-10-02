@@ -68,6 +68,16 @@
   background: #1f2937;
 }
 
+/* Ensure proper scrolling behavior */
+html, body {
+  height: 100%;
+  overflow: auto;
+}
+
+#root {
+  height: 100%;
+}
+
 /* Custom selection styling */
 ::selection {
   background-color: var(--primary-600);

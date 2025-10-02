@@ -1694,7 +1694,7 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
       <Toaster toastOptions={{
           className: 'bg-surface text-on-surface border border-white/10',
       }} />
-      <div className="w-screen h-screen bg-background text-on-surface flex flex-col md:flex-row">
+      <div className="w-screen min-h-screen bg-background text-on-surface flex flex-col md:flex-row">
         
         <input type="file" ref={importProjectInputRef} onChange={handleImportFileChange} accept=".floorplan,.zip" className="hidden" />
         <input type="file" ref={restoreBackupInputRef} onChange={handleImportFileChange} accept=".zip" className="hidden" />
@@ -1705,7 +1705,7 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
             onTakePhotoRequest={() => setIsCameraCaptureOpen(true)}
         />
         
-        <main className={`flex-1 flex flex-col transition-all duration-300 min-w-0 ${isExplorerOpen ? 'md:ml-72' : 'ml-0'}`}>
+        <main className={`flex-1 flex flex-col transition-all duration-300 min-w-0 overflow-auto ${isExplorerOpen ? 'md:ml-72' : 'ml-0'}`}>
           <header className="flex-shrink-0 p-3 bg-surface border-b border-white/10 flex items-center z-50">
             <div className="flex items-center gap-3 min-w-0 flex-shrink">
                 <button onClick={() => setIsExplorerOpen(p => !p)} className="p-2 rounded-lg hover:bg-white/10">
@@ -1835,7 +1835,7 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
             </div>
           </header>
           
-          <div className="flex-1 min-h-0 relative">
+          <div className="flex-1 min-h-0 relative overflow-auto">
             {view === 'editor' ? (
                 isEditorViewDisabled ? (
                   <div className="w-full h-full flex flex-col items-center justify-center p-4">
