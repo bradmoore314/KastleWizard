@@ -47,6 +47,7 @@ import LaborCalculator from './components/LaborCalculator';
 import PartnerBudgetCalculator from './components/PartnerBudgetCalculator';
 import TEECalculator from './components/TEECalculator';
 import SubcontractorList from './components/SubcontractorList';
+import PartnerDirectory from './components/PartnerDirectory';
 import ElevatorLetterDrafter from './components/ElevatorLetterDrafter';
 import DuplicateModal from './components/DuplicateModal';
 import CameraCapture from './components/CameraCapture';
@@ -67,7 +68,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `https://esm.sh/pdfjs-dist@4.5.136/buil
 const GENERAL_NOTES_ID = 'project-level-inventory';
 const DEFAULT_SHAREPOINT_URL = 'https://prod-105.westus.logic.azure.com:443/workflows/2b6ceb55b9c847668e4df2949b57ab09/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-KifdqtI28Zch9FZC_vOu92Xx-fL51iUqmKTFR5PPnk';
 
-type View = 'editor' | 'list' | 'calculators' | 'checklist' | 'gallery' | 'elevator-letter' | 'audit-log' | 'subcontractors';
+type View = 'editor' | 'list' | 'tools' | 'checklist' | 'gallery' | 'elevator-letter' | 'audit-log' | 'subcontractors' | 'partner-directory';
 type CalculatorType = 'gateway' | 'conduit' | 'labor' | 'partner-budget' | 'tee';
 
 // Wrapper for new calculators
@@ -1718,12 +1719,13 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
               <div className="flex items-center gap-4 flex-shrink-0">
                 <button onClick={() => setView('editor')} disabled={isEditorViewDisabled} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'editor' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'} disabled:opacity-50`}>Floor Plans</button>
                 <button onClick={() => setView('list')} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'list' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Equipment</button>
-                <button onClick={() => { setView('calculators'); setActiveCalculator(null); }} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'calculators' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Calculators</button>
+                <button onClick={() => { setView('tools'); setActiveCalculator(null); }} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'tools' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Tools</button>
                 <button onClick={() => setView('elevator-letter')} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'elevator-letter' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Elevator Letter</button>
                 <button onClick={() => setView('gallery')} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'gallery' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Gallery</button>
                 <button onClick={() => setView('checklist')} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'checklist' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Checklist</button>
                 <button onClick={() => setView('audit-log')} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'audit-log' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Audit Log</button>
                 <button onClick={() => setView('subcontractors')} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'subcontractors' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Subcontractors</button>
+                <button onClick={() => setView('partner-directory')} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'partner-directory' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Partner Directory</button>
               </div>
             </div>
 
@@ -1882,7 +1884,7 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
                     onViewImage={setViewingImageId}
                     onMoveItems={handleMoveItems}
                 />
-            ) : view === 'calculators' ? (
+            ) : view === 'tools' ? (
                 activeCalculator === 'gateway' ? (
                     <GatewayCalculator project={activeProject} onFinish={() => setActiveCalculator(null)} />
                 ) : activeCalculator === 'conduit' ? (
@@ -1900,6 +1902,8 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
                 ) : (
                     <CalculatorSelectionScreen onSelect={(calc) => setActiveCalculator(calc)} />
                 )
+            ) : view === 'partner-directory' ? (
+                <PartnerDirectory onFinish={() => setView('list')} />
             ) : view === 'elevator-letter' ? (
                 <ElevatorLetterDrafter project={activeProject} onFinish={() => setView('list')} />
             ) : view === 'gallery' ? (
