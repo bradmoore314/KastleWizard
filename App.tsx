@@ -48,6 +48,7 @@ import PartnerBudgetCalculator from './components/PartnerBudgetCalculator';
 import TEECalculator from './components/TEECalculator';
 import SubcontractorList from './components/SubcontractorList';
 import PartnerDirectory from './components/PartnerDirectory';
+import WhatsNewModal from './components/WhatsNewModal';
 import ElevatorLetterDrafter from './components/ElevatorLetterDrafter';
 import DuplicateModal from './components/DuplicateModal';
 import CameraCapture from './components/CameraCapture';
@@ -371,6 +372,7 @@ const App = () => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [isDocumentationModalOpen, setIsDocumentationModalOpen] = useState(false);
+  const [isWhatsNewModalOpen, setIsWhatsNewModalOpen] = useState(false);
   const [sharePointUrl, setSharePointUrl] = useState('');
 
   const [isCameraCaptureOpen, setIsCameraCaptureOpen] = useState(false);
@@ -1715,24 +1717,58 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
                 </div>
             </div>
             
-            <div className="flex-1 flex items-center justify-center gap-4 px-4 overflow-x-auto">
-              <div className="flex items-center gap-4 flex-shrink-0">
-                <button onClick={() => setView('editor')} disabled={isEditorViewDisabled} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'editor' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'} disabled:opacity-50`}>Floor Plans</button>
-                <button onClick={() => setView('list')} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'list' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Equipment</button>
-                <button onClick={() => { setView('tools'); setActiveCalculator(null); }} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'tools' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Tools</button>
-                <button onClick={() => setView('elevator-letter')} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'elevator-letter' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Elevator Letter</button>
-                <button onClick={() => setView('gallery')} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'gallery' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Gallery</button>
-                <button onClick={() => setView('checklist')} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'checklist' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Checklist</button>
-                <button onClick={() => setView('audit-log')} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'audit-log' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Audit Log</button>
-                <button onClick={() => setView('subcontractors')} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'subcontractors' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Subcontractors</button>
-                <button onClick={() => setView('partner-directory')} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'partner-directory' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Partner Directory</button>
+            <div className="flex-1 flex items-center justify-center gap-2 sm:gap-4 px-2 sm:px-4 overflow-x-auto">
+              <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+                <button onClick={() => setView('editor')} disabled={isEditorViewDisabled} className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-semibold transition-colors ${view === 'editor' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'} disabled:opacity-50 min-h-[36px]`} title="Floor Plans">
+                  <span className="hidden sm:inline">Floor Plans</span>
+                  <span className="sm:hidden">Plans</span>
+                </button>
+                <button onClick={() => setView('list')} className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-semibold transition-colors ${view === 'list' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'} min-h-[36px]`} title="Equipment">
+                  <span className="hidden sm:inline">Equipment</span>
+                  <span className="sm:hidden">Equip</span>
+                </button>
+                <button onClick={() => { setView('tools'); setActiveCalculator(null); }} className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-semibold transition-colors ${view === 'tools' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'} min-h-[36px]`} title="Tools & Calculators">
+                  <span className="hidden sm:inline">Tools</span>
+                  <span className="sm:hidden">Tools</span>
+                </button>
+                <button onClick={() => setView('elevator-letter')} className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-semibold transition-colors ${view === 'elevator-letter' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'} min-h-[36px]`} title="Elevator Letter">
+                  <span className="hidden sm:inline">Elevator Letter</span>
+                  <span className="sm:hidden">Letter</span>
+                </button>
+                <button onClick={() => setView('gallery')} className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-semibold transition-colors ${view === 'gallery' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'} min-h-[36px]`} title="Gallery">
+                  <span className="hidden sm:inline">Gallery</span>
+                  <span className="sm:hidden">Gallery</span>
+                </button>
+                <button onClick={() => setView('checklist')} className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-semibold transition-colors ${view === 'checklist' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'} min-h-[36px]`} title="Checklist">
+                  <span className="hidden sm:inline">Checklist</span>
+                  <span className="sm:hidden">Check</span>
+                </button>
+                <button onClick={() => setView('audit-log')} className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-semibold transition-colors ${view === 'audit-log' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'} min-h-[36px]`} title="Audit Log">
+                  <span className="hidden sm:inline">Audit Log</span>
+                  <span className="sm:hidden">Audit</span>
+                </button>
+                <button onClick={() => setView('subcontractors')} className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-semibold transition-colors ${view === 'subcontractors' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'} min-h-[36px]`} title="Subcontractors">
+                  <span className="hidden sm:inline">Subcontractors</span>
+                  <span className="sm:hidden">Subs</span>
+                </button>
+                <button onClick={() => setView('partner-directory')} className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-semibold transition-colors ${view === 'partner-directory' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'} min-h-[36px]`} title="Partner Directory">
+                  <span className="hidden sm:inline">Partner Directory</span>
+                  <span className="sm:hidden">Partners</span>
+                </button>
               </div>
             </div>
 
             <div className="flex items-center gap-2 flex-shrink-0">
-                <button 
+                <button
+                    onClick={() => setIsWhatsNewModalOpen(true)}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-semibold transition-colors"
+                    title="What's New in v1.30"
+                >
+                    ✨ v1.30
+                </button>
+                <button
                     onClick={() => setIsDocumentationModalOpen(true)}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-white text-sm font-semibold" 
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-white text-sm font-semibold"
                     title="Open Documentation"
                 >
                     <DocumentationIcon className="w-4 h-4"/>
@@ -2052,6 +2088,7 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
         />
       )}
        {isDocumentationModalOpen && <DocumentationModal isOpen={isDocumentationModalOpen} onClose={() => setIsDocumentationModalOpen(false)} />}
+      {isWhatsNewModalOpen && <WhatsNewModal isOpen={isWhatsNewModalOpen} onClose={() => setIsWhatsNewModalOpen(false)} />}
     </>
   );
 };
