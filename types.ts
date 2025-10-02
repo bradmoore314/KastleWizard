@@ -354,6 +354,20 @@ export interface PartnerBudgetCalculation {
     calculatedAt: string;
 }
 
+export interface TEECalculation {
+    totalLaborHours: number;
+    lodgingPerDiem: number;
+    mealsPerDiem: number;
+    totalWeeks: number;
+    totalNightsTEE: number;
+    lodgingNights: number;
+    mealsNights: number;
+    lodgingCost: number;
+    mealsCost: number;
+    totalTEE: number;
+    calculatedAt: string;
+}
+
 // Conduit Calculator types
 export interface ConduitCalculation {
     id: string;
@@ -452,6 +466,7 @@ export interface Project {
   conduitCalculations: ConduitCalculation[];
   laborCalculations: LaborCalculation[];
   partnerBudget?: PartnerBudgetCalculation;
+  teeCalculations?: TEECalculation;
   elevator_letter_content?: string;
   elevatorLetterFormData?: ElevatorLetterFormData;
   auditLog: AuditLogEntry[];

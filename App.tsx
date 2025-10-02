@@ -45,6 +45,8 @@ import GatewayCalculator from './components/GatewayCalculator';
 import ConduitCalculator from './components/ConduitCalculator';
 import LaborCalculator from './components/LaborCalculator';
 import PartnerBudgetCalculator from './components/PartnerBudgetCalculator';
+import TEECalculator from './components/TEECalculator';
+import SubcontractorList from './components/SubcontractorList';
 import ElevatorLetterDrafter from './components/ElevatorLetterDrafter';
 import DuplicateModal from './components/DuplicateModal';
 import CameraCapture from './components/CameraCapture';
@@ -65,8 +67,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `https://esm.sh/pdfjs-dist@4.5.136/buil
 const GENERAL_NOTES_ID = 'project-level-inventory';
 const DEFAULT_SHAREPOINT_URL = 'https://prod-105.westus.logic.azure.com:443/workflows/2b6ceb55b9c847668e4df2949b57ab09/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-KifdqtI28Zch9FZC_vOu92Xx-fL51iUqmKTFR5PPnk';
 
-type View = 'editor' | 'list' | 'calculators' | 'checklist' | 'gallery' | 'elevator-letter' | 'audit-log';
-type CalculatorType = 'gateway' | 'conduit' | 'labor' | 'partner-budget';
+type View = 'editor' | 'list' | 'calculators' | 'checklist' | 'gallery' | 'elevator-letter' | 'audit-log' | 'subcontractors';
+type CalculatorType = 'gateway' | 'conduit' | 'labor' | 'partner-budget' | 'tee';
 
 // Wrapper for new calculators
 const CalculatorWrapper: React.FC<{ title: string, onBack: () => void, children: React.ReactNode }> = ({ title, onBack, children }) => (
@@ -87,7 +89,8 @@ const CalculatorSelectionScreen: React.FC<{ onSelect: (calc: CalculatorType) => 
         { key: 'gateway', title: 'Gateway Calculator', description: 'Plan video storage and throughput for KastleVideo gateways.', Icon: VideoGatewayIcon },
         { key: 'conduit', title: 'Conduit Calculator', description: 'Estimate material and labor costs for conduit runs.', Icon: ConduitIcon },
         { key: 'labor', title: 'Labor Calculator', description: 'Estimate labor hours for various installation tasks.', Icon: AuditLogIcon },
-        { key: 'partner-budget', title: 'Partner Budget Calculator', description: 'Calculate partner budgets with T&E for project proposals.', Icon: CalculatorIcon }
+        { key: 'partner-budget', title: 'Partner Budget Calculator', description: 'Calculate partner budgets with T&E for project proposals.', Icon: CalculatorIcon },
+        { key: 'tee', title: 'T&E Calculator', description: 'Calculate travel & expense costs for remote jobs.', Icon: CalculatorIcon }
     ];
 
     return (
@@ -1720,6 +1723,7 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
                 <button onClick={() => setView('gallery')} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'gallery' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Gallery</button>
                 <button onClick={() => setView('checklist')} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'checklist' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Checklist</button>
                 <button onClick={() => setView('audit-log')} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'audit-log' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Audit Log</button>
+                <button onClick={() => setView('subcontractors')} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${view === 'subcontractors' ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}>Subcontractors</button>
               </div>
             </div>
 
@@ -1891,6 +1895,8 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
                     </CalculatorWrapper>
                 ) : activeCalculator === 'partner-budget' ? (
                     <PartnerBudgetCalculator project={activeProject} onFinish={() => setActiveCalculator(null)} />
+                ) : activeCalculator === 'tee' ? (
+                    <TEECalculator project={activeProject} onFinish={() => setActiveCalculator(null)} />
                 ) : (
                     <CalculatorSelectionScreen onSelect={(calc) => setActiveCalculator(calc)} />
                 )
@@ -1907,6 +1913,8 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
                 <Checklist project={activeProject} onRunAnalysis={handleRunAnalysis} isAnalyzing={isAnalyzing} />
             ) : view === 'audit-log' ? (
                 <AuditLogViewer project={activeProject} />
+            ) : view === 'subcontractors' ? (
+                <SubcontractorList onFinish={() => setView('list')} />
             ) : null}
           </div>
         </main>
