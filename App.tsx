@@ -1750,13 +1750,6 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
 
             <div className="flex items-center gap-2 flex-shrink-0">
                 <button
-                    onClick={() => setIsWhatsNewModalOpen(true)}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-semibold transition-colors"
-                    title="What's New in v1.30"
-                >
-                    ✨ v1.30
-                </button>
-                <button
                     onClick={() => setIsDocumentationModalOpen(true)}
                     className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-white text-sm font-semibold"
                     title="Open Documentation"
