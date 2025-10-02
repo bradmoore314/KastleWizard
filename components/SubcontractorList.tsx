@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 
 interface SubcontractorListProps {
     onFinish: () => void;
@@ -56,58 +56,90 @@ const SUBCONTRACTOR_DATA = [
 ];
 
 const SubcontractorList: React.FC<SubcontractorListProps> = ({ onFinish }) => {
+    const [searchTerm, setSearchTerm] = useState('');
+
+    // Filter partners based on search term
+    const filteredPartners = useMemo(() =>
+        SUBCONTRACTOR_DATA.filter(partner =>
+            partner.partner.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (partner.contact && partner.contact.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (partner.phone && partner.phone.toLowerCase().includes(searchTerm.toLowerCase()))
+        ), [searchTerm]
+    );
+
     return (
         <div className="w-full h-full flex flex-col bg-background text-on-surface">
-            <header className="p-4 md:p-6 border-b border-white/10 flex-shrink-0 flex justify-between items-center bg-surface">
-                <h1 className="text-2xl font-bold flex items-center gap-3">
-                    Subcontractor Reference List
-                </h1>
+            <header className="p-3 md:p-4 border-b border-white/10 flex-shrink-0 flex justify-between items-center bg-surface">
+                <h1 className="text-lg md:text-xl font-bold">Subcontractor Reference List</h1>
                 <button onClick={onFinish} className="p-2 rounded-full hover:bg-white/10">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </header>
 
-            <div className="flex-1 overflow-y-auto p-4 md:p-6">
-                <div className="bg-gradient-to-br from-surface to-surface/80 p-8 rounded-xl border border-white/10 shadow-lg">
-                    <h2 className="text-2xl font-bold mb-8 text-primary-400 flex items-center gap-3">
-                        <div className="w-2 h-8 bg-primary-400 rounded-full"></div>
-                        Approved Partner Network
-                    </h2>
+            <div className="flex-1 overflow-hidden p-3 md:p-4">
+                {/* Search Bar */}
+                <div className="mb-4">
+                    <div className="relative max-w-md mx-auto">
+                        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input
+                            type="text"
+                            placeholder="Search partners..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full bg-background/50 backdrop-blur-sm p-3 pl-10 rounded-lg border border-white/20 text-sm focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-all duration-200"
+                        />
+                    </div>
+                </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
-                        {SUBCONTRACTOR_DATA.map((subcontractor, index) => (
-                            <div key={index} className="bg-background/30 backdrop-blur-sm p-4 rounded-lg border border-white/10 hover:border-primary-400/30 hover:bg-background/50 transition-all duration-200">
-                                <div className="space-y-3">
-                                    <div>
-                                        <span className="text-xs font-semibold text-primary-400 uppercase tracking-wide">Partner Company</span>
-                                        <div className="font-bold text-on-surface mt-1">{subcontractor.partner}</div>
+                {/* Partner Count */}
+                <div className="text-center mb-3 text-sm text-on-surface-variant">
+                    Showing <span className="font-semibold text-primary-400">{filteredPartners.length}</span> of <span className="font-semibold text-primary-400">{SUBCONTRACTOR_DATA.length}</span> partners
+                </div>
+
+                {/* Compact Partner List */}
+                <div className="flex-1 overflow-y-auto">
+                    <div className="space-y-1">
+                        {filteredPartners.map((subcontractor, index) => (
+                            <div key={index} className="bg-surface/50 p-3 rounded border border-white/10 hover:border-primary-400/30 hover:bg-surface/70 transition-all duration-200">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-sm">
+                                    <div className="min-w-0">
+                                        <div className="font-semibold text-primary-400 truncate">{subcontractor.partner}</div>
+                                        <div className="text-xs text-on-surface-variant">Company</div>
                                     </div>
-                                    <div>
-                                        <span className="text-xs font-semibold text-primary-400 uppercase tracking-wide">Primary Contact</span>
-                                        <div className="text-on-surface mt-1">{subcontractor.contact}</div>
+                                    <div className="min-w-0">
+                                        <div className="truncate">{subcontractor.contact}</div>
+                                        <div className="text-xs text-on-surface-variant">Contact</div>
                                     </div>
-                                    <div>
-                                        <span className="text-xs font-semibold text-primary-400 uppercase tracking-wide">Contact Details</span>
-                                        <div className="text-sm text-on-surface-variant mt-1">{subcontractor.phone}</div>
+                                    <div className="min-w-0 sm:col-span-2 lg:col-span-1">
+                                        <div className="text-xs text-on-surface-variant truncate">{subcontractor.phone}</div>
+                                        <div className="text-xs text-on-surface-variant">Details</div>
                                     </div>
                                 </div>
                             </div>
                         ))}
                     </div>
 
-                    <div className="mt-8 p-6 bg-gradient-to-r from-yellow-400/10 to-orange-400/10 rounded-lg border border-yellow-400/20">
-                        <div className="flex items-start gap-3">
-                            <div className="text-yellow-400 text-xl">⚠️</div>
-                            <div>
-                                <p className="font-semibold text-on-surface mb-2">Important Notice</p>
-                                <p className="text-sm text-on-surface-variant">
-                                    This directory contains approved partners with verified capabilities.
-                                    Contact information and availability may change over time.
-                                    Always verify current details and partner status before engaging for projects.
-                                </p>
-                            </div>
+                    {filteredPartners.length === 0 && (
+                        <div className="text-center py-8">
+                            <div className="text-4xl mb-3">🔍</div>
+                            <h3 className="text-lg font-semibold text-on-surface mb-2">No partners found</h3>
+                            <p className="text-on-surface-variant text-sm">
+                                Try adjusting your search terms
+                            </p>
+                        </div>
+                    )}
+                </div>
+
+                {/* Important Notice - Compact */}
+                <div className="mt-4 p-3 bg-yellow-400/10 rounded-lg border border-yellow-400/20">
+                    <div className="flex items-start gap-2">
+                        <div className="text-yellow-400 text-sm mt-0.5">⚠️</div>
+                        <div className="text-xs text-on-surface-variant">
+                            <strong>Important:</strong> Verify current details and partner status before engaging for projects.
                         </div>
                     </div>
                 </div>
