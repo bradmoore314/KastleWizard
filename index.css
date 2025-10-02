@@ -1,7 +1,27 @@
 /* Kastle Wizard 2.0 - Main Stylesheet */
 
-/* Import Tailwind CSS from CDN */
-@import "https://cdn.tailwindcss.com";
+/* Tailwind CSS v4 Import */
+@import "tailwindcss";
+
+/* Tailwind Theme Configuration */
+@theme {
+  --color-primary-50: #fef2f2;
+  --color-primary-100: #fee2e2;
+  --color-primary-200: #fecaca;
+  --color-primary-300: #fca5a5;
+  --color-primary-400: #f87171;
+  --color-primary-500: #ef4444;
+  --color-primary-600: #dc2626;
+  --color-primary-700: #b91c1c;
+  --color-primary-800: #991b1b;
+  --color-primary-900: #7f1d1d;
+  --color-primary-950: #450a0a;
+  
+  --color-background: #030712;
+  --color-surface: #111827;
+  --color-on-surface: #f9fafb;
+  --color-on-surface-variant: #9ca3af;
+}
 
 /* Custom CSS Variables for the application theme */
 :root {

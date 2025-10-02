@@ -6,45 +6,17 @@
     <title>Kastle Systems | Floor Plan Tool</title>
     
     <!-- PWA Manifest & Theme -->
-    <link rel="manifest" href="./manifest.json" />
-    <link rel="icon" href="./public/icon.svg" type="image/svg+xml">
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <meta name="theme-color" content="#dc2626" />
 
     <!-- Apple PWA Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Kastle Tool" />
-    <link rel="apple-touch-icon" href="./public/icon.svg">
+    <link rel="apple-touch-icon" href="/icon.svg">
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            colors: {
-              'primary': {
-                '50': '#fef2f2', 
-                '100': '#fee2e2', 
-                '200': '#fecaca', 
-                '300': '#fca5a5', 
-                '400': '#f87171', 
-                '500': '#ef4444',
-                '600': '#dc2626',
-                '700': '#b91c1c', 
-                '800': '#991b1b', 
-                '900': '#7f1d1d',
-                '950': '#450a0a'
-              },
-              background: '#030712',
-              surface: '#111827',
-              'on-surface': '#f9fafb',
-              'on-surface-variant': '#9ca3af',
-            }
-          }
-        }
-      }
-    </script>
     <style>
       /* For custom scrollbars */
       ::-webkit-scrollbar {

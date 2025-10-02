@@ -1173,14 +1173,14 @@ const App = () => {
   };
 
   const handleRunAnalysis = async () => {
-    if (!activeProject || !process.env.API_KEY) {
+    if (!activeProject || !import.meta.env.VITE_API_KEY) {
         toast.error("Project or API key is missing.");
         return;
     }
     setIsAnalyzing(true);
     setIsAnalysisModalOpen(true);
     try {
-        const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+        const ai = new GoogleGenAI({apiKey: import.meta.env.VITE_API_KEY});
         const projectData = generateProjectDataForAI(activeProject);
         const prompt = `Please analyze the following security system project data. Provide a professional, client-facing summary that can be used in a quote. The summary should be well-structured with markdown formatting.
         - Start with an executive summary of the project scope.
@@ -1316,7 +1316,7 @@ const App = () => {
   };
 
   const handleAiSuggestAreaDefined = useCallback(async (area: { x: number; y: number; width: number; height: number; }) => {
-    if (!aiPromptConfig || !activePdfJsDoc || !process.env.API_KEY) {
+    if (!aiPromptConfig || !activePdfJsDoc || !import.meta.env.VITE_API_KEY) {
         setAiSuggestionError("Cannot generate suggestions without a floorplan or API key.");
         setAiSuggestionState('error');
         return;
@@ -1354,7 +1354,7 @@ const App = () => {
         const imageDataUrl = croppedCanvas.toDataURL('image/jpeg', 0.8);
         const base64Data = imageDataUrl.split(',')[1];
 
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
         const deviceTypeEnum = Array.from(aiPromptConfig.selectedEquipment);
         
         const imageWidth = Math.round(croppedCanvas.width);
@@ -1484,7 +1484,7 @@ CRITICAL PLACEMENT RULES:
   };
 
   const handleAiRenameAreaDefined = useCallback(async (area: { x: number; y: number; width: number; height: number; }) => {
-    if (!activePdfJsDoc || !process.env.API_KEY) {
+    if (!activePdfJsDoc || !import.meta.env.VITE_API_KEY) {
         setAiRenameError("Cannot rename equipment without a floorplan or API key.");
         setAiRenameState('error');
         return;
@@ -1567,7 +1567,7 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
             },
         };
 
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: [{ parts: [{ inlineData: { mimeType: 'image/jpeg', data: base64Data } }, { text: prompt }] }],

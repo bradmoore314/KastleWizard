@@ -7,7 +7,7 @@ const APP_SHELL_FILES = [
   './',
   './index.html',
   './manifest.json',
-  './public/icon.svg',
+  './icon.svg',
   './index.tsx',
   './App.tsx',
   './types.ts',

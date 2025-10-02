@@ -122,7 +122,7 @@ Generate the full text of the letter. Do not include any commentary, just the le
     };
 
     const handleGenerate = async () => {
-        if (!process.env.API_KEY) {
+        if (!import.meta.env.VITE_API_KEY) {
             toast.error("API Key is not configured.");
             return;
         }
@@ -133,7 +133,7 @@ Generate the full text of the letter. Do not include any commentary, just the le
         setIsGenerating(true);
         const toastId = toast.loading('Generating letter with AI...');
         try {
-            const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+            const ai = new GoogleGenAI({apiKey: import.meta.env.VITE_API_KEY});
             const prompt = generatePrompt();
             
             const response = await ai.models.generateContent({

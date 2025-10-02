@@ -61,11 +61,11 @@ const AiAssistant: React.FC<AiAssistantProps> = ({ onClose, onAddDevice, activeP
     }, [messages]);
 
     useEffect(() => {
-        if (!process.env.API_KEY) {
+        if (!import.meta.env.VITE_API_KEY) {
             setError("AI Assistant requires an API key to be configured.");
             return;
         }
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
         const systemInstruction = `You are a helpful AI assistant for the Kastle Systems Floor Plan tool. Your primary function is to help users add security equipment to their inventory.
 The current project is "${activeProjectName || 'Unnamed Project'}".
 Your goal is to gather the necessary details for a device by asking clarifying questions.
