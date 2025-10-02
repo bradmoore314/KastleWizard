@@ -3,3 +3,4 @@
 # Force cache clear for deployment
 dist/
 .vercel/
+// Force Vercel cache clear - Thu Oct  2 14:01:08 CDT 2025

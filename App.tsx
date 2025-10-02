@@ -39,7 +39,7 @@ import {
     generateBackupZipBlob 
 } from './services/export';
 import { saveDirectoryHandle, getDirectoryHandle, clearDirectoryHandle, verifyPermission } from './services/autoBackup';
-import { exportProfessionalExcel } from './services/enhancedExport';
+// import { exportProfessionalExcel } from './services/enhancedExport';
 import { getFile, saveFile, getAllFileIds, deleteFile } from './services/fileStorage';
 import SettingsModal from './components/SettingsModal';
 import GatewayCalculator from './components/GatewayCalculator';
@@ -712,16 +712,16 @@ const App = () => {
     }
   };
 
-  const handleExportProfessionalExcel = async () => {
-    if (!activeProject) return;
-    try {
-      await exportProfessionalExcel(activeProject);
-      toast.success('Professional Excel report exported successfully!');
-    } catch (error) {
-      console.error('Error exporting professional Excel:', error);
-      toast.error('Failed to export professional Excel report');
-    }
-  };
+  // const handleExportProfessionalExcel = async () => {
+  //   if (!activeProject) return;
+  //   try {
+  //     await exportProfessionalExcel(activeProject);
+  //     toast.success('Professional Excel report exported successfully!');
+  //   } catch (error) {
+  //     console.error('Error exporting professional Excel:', error);
+  //     toast.error('Failed to export professional Excel report');
+  //   }
+  // };
 
   const handleRestoreBackup = () => {
     restoreBackupInputRef.current?.click();
@@ -1801,7 +1801,7 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
                         onImportProject={handleImportProject}
                         onExportProject={handleExportProject}
                         onExportDeliverables={handleExportDeliverables}
-                        onExportProfessionalExcel={handleExportProfessionalExcel}
+                        // onExportProfessionalExcel={handleExportProfessionalExcel}
                         hasActiveProject={!!activeProject}
                         onBackupAllData={handleBackupAllData}
                         hasProjects={projects.length > 0}
