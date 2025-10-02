@@ -331,35 +331,195 @@ export const generatePdfBlob = async (
         });
         currentY -= 40;
 
-        const counts = devicesAndMarkers.reduce<Record<string, number>>((acc, item) => {
+        // Group equipment by type for better organization
+        const equipmentByType = devicesAndMarkers.reduce<Record<string, (DeviceEdit | MarkerEdit)[]>>((acc, item) => {
             const key = getEditIconKey(item);
             const label = EQUIPMENT_CONFIG[key]?.label || 'Unknown';
-            acc[label] = (acc[label] || 0) + 1;
+            if (!acc[label]) acc[label] = [];
+            acc[label].push(item);
             return acc;
         }, {});
-        
-        const sortedSummary = Object.entries(counts).sort((a, b) => a[0].localeCompare(b[0]));
 
-        for (const [label, count] of sortedSummary) {
-            if (currentY < margin) {
-                // Future improvement: add new page if content overflows
-                break; 
+        const sortedTypes = Object.keys(equipmentByType).sort();
+
+        for (const equipmentType of sortedTypes) {
+            const items = equipmentByType[equipmentType];
+
+            // Add section header
+            if (currentY < margin + 100) {
+                // Add new page if not enough space
+                const newPage = pdfDoc.addPage(pageDimensions);
+                currentY = pageHeight - margin;
             }
-            summaryPage.drawText(`${label}:`, {
+
+            // Equipment type header
+            summaryPage.drawText(`${equipmentType} (${items.length} ${items.length === 1 ? 'item' : 'items'})`, {
                 x: margin,
                 y: currentY,
                 font: fontBold,
-                size: 12,
+                size: 14,
                 color: rgb(0, 0, 0)
             });
-            summaryPage.drawText(String(count), {
-                x: margin + 200,
-                y: currentY,
-                font: font,
-                size: 12,
-                color: rgb(0, 0, 0)
+            currentY -= 25;
+
+            // Create table headers
+            const tableStartY = currentY;
+            const colWidths = [80, 120, 100, 150, 100]; // Location, Type, Status, Notes, Floor
+            let colX = margin;
+
+            // Draw table header
+            const headers = ['Location', 'Type/Details', 'Status', 'Notes', 'Floor'];
+            headers.forEach((header, i) => {
+                summaryPage.drawText(header, {
+                    x: colX,
+                    y: currentY,
+                    font: fontBold,
+                    size: 10,
+                    color: rgb(1, 1, 1)
+                });
+                // Draw header background
+                summaryPage.drawRectangle({
+                    x: colX - 2,
+                    y: currentY - 12,
+                    width: colWidths[i],
+                    height: 15,
+                    color: rgb(0.9, 0.9, 0.9),
+                    borderColor: rgb(0, 0, 0),
+                    borderWidth: 0.5
+                });
+                colX += colWidths[i];
             });
             currentY -= 20;
+
+            // Draw each equipment item
+            for (const item of items) {
+                if (currentY < margin + 50) {
+                    // Add new page for next equipment type
+                    break;
+                }
+
+                colX = margin;
+
+                // Location
+                const location = item.type === 'device'
+                    ? (item.data as any).location || 'Not specified'
+                    : (item.data as any).label || 'Not specified';
+
+                summaryPage.drawText(location, {
+                    x: colX,
+                    y: currentY,
+                    font: font,
+                    size: 9,
+                    color: rgb(0, 0, 0)
+                });
+
+                colX += colWidths[0];
+
+                // Type/Details
+                let typeDetails = '';
+                if (item.type === 'device') {
+                    const deviceData = item.data as any;
+                    if (equipmentType === 'Access Door') {
+                        typeDetails = `${deviceData.install_type || 'Unknown'} - ${deviceData.interior_perimeter || 'Unknown'}`;
+                    } else if (equipmentType === 'Camera') {
+                        typeDetails = `${deviceData.camera_type_new || 'Unknown'} - ${deviceData.environment || 'Unknown'}`;
+                    } else if (equipmentType === 'Elevator') {
+                        typeDetails = `${deviceData.elevator_type || 'Unknown'} - ${deviceData.floor_count || 'N/A'} floors`;
+                    } else if (equipmentType === 'Intercom') {
+                        typeDetails = `${deviceData.intercom_type || 'Unknown'} - ${deviceData.connection_type || 'Unknown'}`;
+                    } else if (equipmentType === 'Turnstile') {
+                        typeDetails = `${deviceData.turnstile_type || 'Unknown'} - ${deviceData.lane_count || 'N/A'} lanes`;
+                    } else {
+                        typeDetails = deviceData.deviceType || 'Unknown';
+                    }
+                } else {
+                    typeDetails = (item.data as any).label || 'Marker';
+                }
+
+                // Truncate if too long
+                if (typeDetails.length > 25) {
+                    typeDetails = typeDetails.substring(0, 22) + '...';
+                }
+
+                summaryPage.drawText(typeDetails, {
+                    x: colX,
+                    y: currentY,
+                    font: font,
+                    size: 9,
+                    color: rgb(0, 0, 0)
+                });
+
+                colX += colWidths[1];
+
+                // Status (for devices only)
+                let status = 'Active';
+                if (item.type === 'device') {
+                    status = (item.data as any).status || 'Active';
+                }
+
+                summaryPage.drawText(status, {
+                    x: colX,
+                    y: currentY,
+                    font: font,
+                    size: 9,
+                    color: status === 'Active' ? rgb(0, 0.5, 0) : rgb(0.5, 0, 0)
+                });
+
+                colX += colWidths[2];
+
+                // Notes (truncated)
+                let notes = '';
+                if (item.type === 'device') {
+                    notes = (item.data as any).notes || '';
+                } else {
+                    notes = (item.data as any).notes || '';
+                }
+
+                if (notes.length > 30) {
+                    notes = notes.substring(0, 27) + '...';
+                }
+
+                summaryPage.drawText(notes || '-', {
+                    x: colX,
+                    y: currentY,
+                    font: font,
+                    size: 9,
+                    color: rgb(0, 0, 0)
+                });
+
+                colX += colWidths[3];
+
+                // Floor
+                let floor = 'N/A';
+                if (item.type === 'device') {
+                    floor = (item.data as any).floor?.toString() || 'N/A';
+                } else {
+                    floor = (item.data as any).floor?.toString() || 'N/A';
+                }
+
+                summaryPage.drawText(floor, {
+                    x: colX,
+                    y: currentY,
+                    font: font,
+                    size: 9,
+                    color: rgb(0, 0, 0)
+                });
+
+                // Draw row border
+                summaryPage.drawRectangle({
+                    x: margin - 2,
+                    y: currentY - 12,
+                    width: colWidths.reduce((a, b) => a + b, 0) + 4,
+                    height: 15,
+                    borderColor: rgb(0.8, 0.8, 0.8),
+                    borderWidth: 0.5,
+                    opacity: 0.5
+                });
+
+                currentY -= 18;
+            }
+
+            currentY -= 10; // Space between equipment types
         }
     }
 
