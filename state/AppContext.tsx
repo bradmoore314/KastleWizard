@@ -57,6 +57,7 @@ type Action =
     | { type: 'BRING_TO_FRONT'; payload: string[] }
     | { type: 'SEND_TO_BACK'; payload: string[] }
     | { type: 'MAKE_SAME_SIZE'; payload: string[] }
+    | { type: 'MAKE_SAME_SIZE_WITH_REFERENCE'; payload: { selectedIds: string[], referenceItemId: string } }
     | { type: 'UPDATE_DEVICE_DATA'; payload: { deviceId: string, data: DeviceData } }
     | { type: 'UPDATE_MULTIPLE_DEVICE_DATA'; payload: { deviceIds: string[], data: Partial<DeviceData> } }
     | { type: 'UPDATE_MARKER_DATA'; payload: { id: string, data: MarkerData } }
@@ -781,6 +782,52 @@ const appReducer = (state: AppState, action: Action): AppState => {
                     projectLevelInventory: newInventory
                  } : p);
                  return { ...state, projects: newProjects };
+            }
+        }
+
+        case 'MAKE_SAME_SIZE_WITH_REFERENCE': {
+            const { projectInventory, floorplanInventory, floorplan } = getActiveInventories();
+            const inventory = floorplan ? floorplanInventory : projectInventory;
+            if (!inventory) return state;
+
+            const { selectedIds, referenceItemId } = action.payload;
+            const referenceItem = inventory.find(e => e.id === referenceItemId);
+            if (!referenceItem) return state;
+
+            const { width, height } = referenceItem;
+
+            const newInventory = inventory.map((item): AnyEdit => {
+                if (selectedIds.includes(item.id) && item.id !== referenceItemId) {
+                    switch (item.type) {
+                        case 'text':
+                            return { ...item, width, height };
+                        case 'draw':
+                            return { ...item, width, height };
+                        case 'rectangle':
+                            return { ...item, width, height };
+                        case 'conduit':
+                            return { ...item, width, height };
+                        case 'device':
+                            return { ...item, width, height };
+                        case 'marker':
+                            return { ...item, width, height };
+                    }
+                }
+                return item;
+            });
+
+            if (floorplan) {
+                const newProjects = projects.map(p => p.id === activeProjectId ? {
+                    ...p,
+                    floorplans: p.floorplans.map(f => f.id === activeFloorplanId ? { ...f, inventory: newInventory } : f)
+                } : p);
+                return { ...state, projects: newProjects };
+            } else {
+                const newProjects = projects.map(p => p.id === activeProjectId ? {
+                    ...p,
+                    projectLevelInventory: newInventory
+                } : p);
+                return { ...state, projects: newProjects };
             }
         }
 
