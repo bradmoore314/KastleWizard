@@ -136,3 +136,56 @@ The application has been deployed to Vercel but is experiencing multiple product
 - Service workers must be in the root of the output directory
 - **React useEffect race condition:** When a component both saves to and loads from the same data source (like project state), avoid watching the data itself as a dependency - only watch identifiers (like project.id). Otherwise you create a circular update loop where save triggers reload triggers save, etc.
 
+## T&E and Partner Budget Calculator Analysis
+
+### Remote Job Calculator for T&E Structure
+
+**Key Components:**
+1. **Labor Hours Integration:** Takes total from CPQ (295 hours shown)
+2. **Per Diem Calculations:**
+   - Lodging: $210/night
+   - GSA Meals: $74/night
+   - Total per diem = lodging + meals
+3. **Duration Calculations:** Links to total install hours for scheduling
+
+**Formula Logic:**
+- Total weeks = total hours ÷ 40 (standard work week)
+- Total nights of T&E = total weeks calculation
+- T&E to be entered into CPQ = calculated total
+
+### Partner Budget Calculator Structure
+
+**Kastle Labor Section:**
+- Kastle Labor = SUM of device-specific calculations
+- Partner Budget = Kastle Labor × 15% markup
+- Partner Quote = IF condition checking 15% calculation
+
+**Device-Specific Calculations:**
+Each device type has formula: `=SUM(C8*D8)` where:
+- C8 = # of devices
+- D8 = Hrs. per Device (10 for New Door, 8 for Takeover Door, etc.)
+
+**Formulas Visible:**
+- `=IFERROR(C3/D3, "")` - Kastle Hourly calculation
+- `=IFERROR(C3-E5, "")` - Kastle Profit calculation
+- `=IF(C5="15 percent", ".85", IF(C5="2"=IFERROR(C3+D5, "")))` - Partner Budget logic
+- `=SUM(C8*D8)`, `=SUM(C9*D9)`, etc. for each device type
+
+**Partner Labor Budget Section:**
+- Estimated Schedule calculations
+- $ Per Hr. Rate calculations
+- Total Hrs. Budget = SUM of all device hours
+- Partner Labor Budget = total hours × rate
+
+**Integration Logic:**
+1. Device quantities come from project inventory
+2. Hours per device are predefined based on device type
+3. Kastle Labor = sum of all device hours
+4. Partner markup (15%) applied to Kastle Labor
+5. Partner gets 85% of total budget
+6. T&E calculations integrate with labor calculations for complete project costing
+
+### Subcontractor List
+- Reference list for partner selection
+- No calculations - informational only
+

@@ -339,6 +339,21 @@ export interface GatewayCalculation extends GatewayConfiguration {
     name: string;
 }
 
+export interface PartnerBudgetCalculation {
+    kastleLaborHours: number;
+    partnerLaborHours: number;
+    kastleLaborCost: number;
+    partnerBudget: number;
+    partnerGets: number;
+    lodgingNights: number;
+    mealsNights: number;
+    lodgingCost: number;
+    mealsCost: number;
+    totalTEE: number;
+    deviceBreakdown: Record<string, number>;
+    calculatedAt: string;
+}
+
 // Conduit Calculator types
 export interface ConduitCalculation {
     id: string;
@@ -436,6 +451,7 @@ export interface Project {
   gatewayCalculations: GatewayCalculation[];
   conduitCalculations: ConduitCalculation[];
   laborCalculations: LaborCalculation[];
+  partnerBudget?: PartnerBudgetCalculation;
   elevator_letter_content?: string;
   elevatorLetterFormData?: ElevatorLetterFormData;
   auditLog: AuditLogEntry[];

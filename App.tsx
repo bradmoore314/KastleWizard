@@ -44,6 +44,7 @@ import SettingsModal from './components/SettingsModal';
 import GatewayCalculator from './components/GatewayCalculator';
 import ConduitCalculator from './components/ConduitCalculator';
 import LaborCalculator from './components/LaborCalculator';
+import PartnerBudgetCalculator from './components/PartnerBudgetCalculator';
 import ElevatorLetterDrafter from './components/ElevatorLetterDrafter';
 import DuplicateModal from './components/DuplicateModal';
 import CameraCapture from './components/CameraCapture';
@@ -65,7 +66,7 @@ const GENERAL_NOTES_ID = 'project-level-inventory';
 const DEFAULT_SHAREPOINT_URL = 'https://prod-105.westus.logic.azure.com:443/workflows/2b6ceb55b9c847668e4df2949b57ab09/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-KifdqtI28Zch9FZC_vOu92Xx-fL51iUqmKTFR5PPnk';
 
 type View = 'editor' | 'list' | 'calculators' | 'checklist' | 'gallery' | 'elevator-letter' | 'audit-log';
-type CalculatorType = 'gateway' | 'conduit' | 'labor';
+type CalculatorType = 'gateway' | 'conduit' | 'labor' | 'partner-budget';
 
 // Wrapper for new calculators
 const CalculatorWrapper: React.FC<{ title: string, onBack: () => void, children: React.ReactNode }> = ({ title, onBack, children }) => (
@@ -85,7 +86,8 @@ const CalculatorSelectionScreen: React.FC<{ onSelect: (calc: CalculatorType) => 
     const calcOptions = [
         { key: 'gateway', title: 'Gateway Calculator', description: 'Plan video storage and throughput for KastleVideo gateways.', Icon: VideoGatewayIcon },
         { key: 'conduit', title: 'Conduit Calculator', description: 'Estimate material and labor costs for conduit runs.', Icon: ConduitIcon },
-        { key: 'labor', title: 'Labor Calculator', description: 'Estimate labor hours for various installation tasks.', Icon: AuditLogIcon }
+        { key: 'labor', title: 'Labor Calculator', description: 'Estimate labor hours for various installation tasks.', Icon: AuditLogIcon },
+        { key: 'partner-budget', title: 'Partner Budget Calculator', description: 'Calculate partner budgets with T&E for project proposals.', Icon: CalculatorIcon }
     ];
 
     return (
@@ -1887,6 +1889,8 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
                     <CalculatorWrapper title="Labor Hour Estimator" onBack={() => setActiveCalculator(null)}>
                         <LaborCalculator />
                     </CalculatorWrapper>
+                ) : activeCalculator === 'partner-budget' ? (
+                    <PartnerBudgetCalculator project={activeProject} onFinish={() => setActiveCalculator(null)} />
                 ) : (
                     <CalculatorSelectionScreen onSelect={(calc) => setActiveCalculator(calc)} />
                 )

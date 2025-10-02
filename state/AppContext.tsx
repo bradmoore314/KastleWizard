@@ -39,6 +39,7 @@ type Action =
     | { type: 'CREATE_PROJECT_AND_ACTIVATE' }
     | { type: 'DELETE_PROJECT'; payload: string }
     | { type: 'UPDATE_PROJECT_NAME'; payload: { id: string, name: string } }
+    | { type: 'UPDATE_PROJECT'; payload: Project }
     | { type: 'ADD_FLOORPLAN'; payload: { projectId: string, floorplan: Floorplan } }
     | { type: 'DELETE_FLOORPLAN'; payload: { projectId: string, floorplanId: string } }
     | { type: 'DELETE_PAGES'; payload: { pageIndices: number[] } }
@@ -184,6 +185,16 @@ const appReducer = (state: AppState, action: Action): AppState => {
                     oldName = p.name;
                     const log = createLogEntry('UPDATE_PROJECT', `Updated project name from "${oldName}" to "${action.payload.name}"`);
                     return { ...p, name: action.payload.name, auditLog: [log, ...p.auditLog] };
+                }
+                return p;
+            });
+            return { ...state, projects: newProjects };
+        }
+        case 'UPDATE_PROJECT': {
+            const newProjects = state.projects.map(p => {
+                if (p.id === action.payload.id) {
+                    const log = createLogEntry('UPDATE_PROJECT', `Updated project data`);
+                    return { ...action.payload, auditLog: [log, ...action.payload.auditLog] };
                 }
                 return p;
             });
