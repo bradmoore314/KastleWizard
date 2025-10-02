@@ -39,6 +39,7 @@ import {
     generateBackupZipBlob 
 } from './services/export';
 import { saveDirectoryHandle, getDirectoryHandle, clearDirectoryHandle, verifyPermission } from './services/autoBackup';
+import { exportProfessionalExcel } from './services/enhancedExport';
 import { getFile, saveFile, getAllFileIds, deleteFile } from './services/fileStorage';
 import SettingsModal from './components/SettingsModal';
 import GatewayCalculator from './components/GatewayCalculator';
@@ -710,7 +711,18 @@ const App = () => {
         toast.error("Backup failed.", { id: toastId });
     }
   };
-  
+
+  const handleExportProfessionalExcel = async () => {
+    if (!activeProject) return;
+    try {
+      await exportProfessionalExcel(activeProject);
+      toast.success('Professional Excel report exported successfully!');
+    } catch (error) {
+      console.error('Error exporting professional Excel:', error);
+      toast.error('Failed to export professional Excel report');
+    }
+  };
+
   const handleRestoreBackup = () => {
     restoreBackupInputRef.current?.click();
   };
@@ -1783,12 +1795,13 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
                     <SparklesIcon className="w-5 h-5"/>
                 </button>
                 <div className="hidden md:block" ref={desktopActionsMenuRef}>
-                    <DesktopActionsMenu 
+                    <DesktopActionsMenu
                         isActionsMenuOpen={isActionsMenuOpen}
                         onToggleMenu={() => setIsActionsMenuOpen(p => !p)}
                         onImportProject={handleImportProject}
                         onExportProject={handleExportProject}
                         onExportDeliverables={handleExportDeliverables}
+                        onExportProfessionalExcel={handleExportProfessionalExcel}
                         hasActiveProject={!!activeProject}
                         onBackupAllData={handleBackupAllData}
                         hasProjects={projects.length > 0}

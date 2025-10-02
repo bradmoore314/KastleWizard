@@ -7,6 +7,7 @@ interface DesktopActionsMenuProps {
     onImportProject: () => void;
     onExportProject: () => void;
     onExportDeliverables: () => void;
+    onExportProfessionalExcel: () => void;
     onBackupAllData: () => void;
     onRestoreBackup: () => void;
     onConfigureAutoBackup: () => void;
@@ -30,6 +31,7 @@ const DesktopActionsMenu: React.FC<DesktopActionsMenuProps> = ({
     onImportProject,
     onExportProject,
     onExportDeliverables,
+    onExportProfessionalExcel,
     onBackupAllData,
     onRestoreBackup,
     onConfigureAutoBackup,
@@ -61,6 +63,9 @@ const DesktopActionsMenu: React.FC<DesktopActionsMenuProps> = ({
                     </button>
                     <button onClick={onExportDeliverables} disabled={!hasActiveProject} className="w-full text-left flex items-center gap-3 p-3 hover:bg-white/10 disabled:opacity-50 text-sm text-on-surface-variant" title="Export all deliverables for the current project">
                         <PackageIcon className="w-5 h-5" /> <span>Export Deliverables</span>
+                    </button>
+                    <button onClick={onExportProfessionalExcel} disabled={!hasActiveProject} className="w-full text-left flex items-center gap-3 p-3 hover:bg-white/10 disabled:opacity-50 text-sm text-on-surface-variant" title="Export professional Excel report with formatting">
+                        <PackageIcon className="w-5 h-5" /> <span>Export Professional Excel</span>
                     </button>
                      <button onClick={onSendToSharePoint} disabled={!hasActiveProject || !isSharePointConfigured} className="w-full text-left flex items-center gap-3 p-3 hover:bg-white/10 disabled:opacity-50 text-sm text-on-surface-variant" title={!isSharePointConfigured ? "Configure SharePoint URL in Settings" : "Send project files to SharePoint"}>
                         <SendIcon className="w-5 h-5" /> <span>Send to SharePoint</span>
