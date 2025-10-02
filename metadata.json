@@ -1,0 +1,8 @@
+{
+  "name": "Kastle Wizard 2.0",
+  "description": "",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "prompt": ""
+}

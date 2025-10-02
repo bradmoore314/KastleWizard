@@ -1,0 +1,17 @@
+{
+  "short_name": "Kastle Tool",
+  "name": "Kastle Systems | Floor Plan Tool",
+  "description": "An advanced floor plan tool for Kastle Systems, allowing users to manage projects, design security layouts with various devices, and export professional-grade PDFs.",
+  "icons": [
+    {
+      "src": "/public/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#dc2626",
+  "background_color": "#030712"
+}

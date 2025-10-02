@@ -1,0 +1,82 @@
+/* Kastle Wizard 2.0 - Main Stylesheet */
+
+/* Import Tailwind CSS from CDN */
+@import "https://cdn.tailwindcss.com";
+
+/* Custom CSS Variables for the application theme */
+:root {
+  --background: #030712;
+  --surface: #111827;
+  --surface-variant: #1f2937;
+  --on-surface: #f9fafb;
+  --on-surface-variant: #d1d5db;
+  --primary-50: #eff6ff;
+  --primary-100: #dbeafe;
+  --primary-200: #bfdbfe;
+  --primary-300: #93c5fd;
+  --primary-400: #60a5fa;
+  --primary-500: #3b82f6;
+  --primary-600: #2563eb;
+  --primary-700: #1d4ed8;
+  --primary-800: #1e40af;
+  --primary-900: #1e3a8a;
+}
+
+/* Dark theme customizations */
+.dark {
+  --tw-bg-opacity: 1;
+  background-color: var(--background);
+  color: var(--on-surface);
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-600);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-500);
+}
+
+/* Custom selection styling */
+::selection {
+  background-color: var(--primary-600);
+  color: white;
+}
+
+/* Focus styles for accessibility */
+*:focus {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+}
+
+/* Ensure PDF viewer has proper styling */
+.pdf-viewer-container {
+  background: white;
+}
+
+/* Print styles */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-content, .print-content * {
+    visibility: visible;
+  }
+  .print-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}

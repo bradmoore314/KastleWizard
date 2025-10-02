@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Kastle Systems | Floor Plan Tool</title>
+    
+    <!-- PWA Manifest & Theme -->
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="icon" href="./public/icon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#dc2626" />
+
+    <!-- Apple PWA Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Kastle Tool" />
+    <link rel="apple-touch-icon" href="./public/icon.svg">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'primary': {
+                '50': '#fef2f2', 
+                '100': '#fee2e2', 
+                '200': '#fecaca', 
+                '300': '#fca5a5', 
+                '400': '#f87171', 
+                '500': '#ef4444',
+                '600': '#dc2626',
+                '700': '#b91c1c', 
+                '800': '#991b1b', 
+                '900': '#7f1d1d',
+                '950': '#450a0a'
+              },
+              background: '#030712',
+              surface: '#111827',
+              'on-surface': '#f9fafb',
+              'on-surface-variant': '#9ca3af',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      /* For custom scrollbars */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #1f2937;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #4b5563;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #6b7280;
+      }
+      /* Ensure body takes full height */
+      html, body, #root {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.3.1",
+        "react-dom": "https://esm.sh/react-dom@18.3.1",
+        "react-dom/": "https://esm.sh/react-dom@18.3.1/",
+        "react/": "https://esm.sh/react@18.3.1/",
+        "vitest/": "https://esm.sh/vitest@3.2.4/",
+        "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@4.7.0",
+        "@testing-library/jest-dom/": "https://esm.sh/@testing-library/jest-dom@6.6.4/",
+        "vitest": "https://esm.sh/vitest@3.2.4",
+        "@testing-library/react": "https://esm.sh/@testing-library/react@16.3.0",
+        "@testing-library/dom": "https://esm.sh/testing-library/dom@10.4.1",
+        "lucide-react": "https://esm.sh/lucide-react@0.536.0",
+        "@google/genai": "https://esm.sh/@google/genai@0.15.0",
+        "pdfjs-dist": "https://esm.sh/pdfjs-dist@4.5.136",
+        "react-hot-toast": "https://esm.sh/react-hot-toast@2.5.2",
+        "pdf-lib": "https://esm.sh/pdf-lib@1.17.1",
+        "jszip": "https://esm.sh/jszip@3.10.1",
+        "file-saver": "https://esm.sh/file-saver@2.0.5",
+        "docx": "https://esm.sh/docx@9.5.1",
+        "xlsx": "https://esm.sh/xlsx@0.18.5"
+      }
+    }
+    </script>
+  <link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-background text-on-surface">
+    <div id="root"></div>
+    <div id="portals"></div>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          // Use a relative path for ServiceWorker registration to ensure it's loaded from the correct origin.
+          navigator.serviceWorker.register('./service-worker.js')
+            .then(registration => {
+              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch(err => {
+              console.error('ServiceWorker registration failed: ', err);
+            });
+        });
+      }
+    </script>
+    <script type="module" src="./index.tsx"></script>
+</body>
+</html>
