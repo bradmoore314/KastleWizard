@@ -102,12 +102,12 @@ const CalculatorSelectionScreen: React.FC<{ onSelect: (calc: CalculatorType) => 
             <div className="max-w-4xl text-center">
                 <h1 className="text-4xl font-bold mb-2">Tools</h1>
                 <p className="text-lg text-on-surface-variant mb-8">Select a tool to assist with project planning and estimation.</p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                     {calcOptions.map(({ key, title, description, Icon }) => (
-                        <button key={key} onClick={() => onSelect(key as any)} className="bg-surface p-8 rounded-xl border border-white/10 text-left hover:border-primary-500 hover:bg-primary-950/30 transition-all duration-300 transform hover:-translate-y-1">
-                            <Icon className="w-10 h-10 text-primary-400 mb-4" />
-                            <h2 className="text-xl font-bold text-on-surface mb-2">{title}</h2>
-                            <p className="text-on-surface-variant">{description}</p>
+                        <button key={key} onClick={() => onSelect(key as any)} className="bg-surface p-4 md:p-6 rounded-xl border border-white/10 text-left hover:border-primary-500 hover:bg-primary-950/30 transition-all duration-300 transform hover:-translate-y-1">
+                            <Icon className="w-8 h-8 text-primary-400 mb-3" />
+                            <h2 className="text-lg md:text-xl font-bold text-on-surface mb-1 md:mb-2">{title}</h2>
+                            <p className="text-sm md:text-base text-on-surface-variant">{description}</p>
                         </button>
                     ))}
                 </div>
