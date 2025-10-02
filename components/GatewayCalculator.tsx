@@ -94,6 +94,8 @@ const GatewayCalculator: React.FC<GatewayCalculatorProps> = ({ project, onFinish
     // Load configuration from project, but ONLY when the project ID changes.
     // This prevents the component from resetting its state due to its own save operations.
     // FIX: Load from `project.gatewayCalculations[0]` instead of the legacy `project.gatewayConfiguration`.
+    // IMPORTANT: Do NOT depend on project?.gatewayCalculations as this component updates it,
+    // which would cause a circular update loop and flickering.
     useEffect(() => {
         // The project has `gatewayCalculations`, which is an array.
         // This component seems to manage just one calculation.
@@ -119,7 +121,8 @@ const GatewayCalculator: React.FC<GatewayCalculatorProps> = ({ project, onFinish
             // Reset to default state if there's no project or no saved configuration
             resetState();
         }
-    }, [project?.id, project?.gatewayCalculations, resetState]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [project?.id]);
 
     // Auto-save configuration on changes, but skip the very first mount render
     // to avoid overwriting loaded data with initial state.

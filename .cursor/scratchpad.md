@@ -110,6 +110,14 @@ The application has been deployed to Vercel but is experiencing multiple product
    - ✅ Deprecated meta tag → Added new mobile-web-app-capable tag
    - ✅ Environment variables → Now using proper VITE_ prefix
 
+### Additional Fix Applied
+
+**Gateway Calculator Race Condition ✅**
+- **Issue:** When adding cameras in the Gateway Calculator, the UI would flicker and only allow adding one camera
+- **Root Cause:** Circular dependency in useEffect hooks - the component was watching `project?.gatewayCalculations` which it was also updating, causing it to reload state immediately after saving
+- **Fix:** Changed the useEffect dependency from `[project?.id, project?.gatewayCalculations, resetState]` to only `[project?.id]`
+- **Result:** Component now only reloads when switching projects, not when auto-saving its own changes
+
 ### Known Issues Documented
 
 - **xlsx vulnerability:** Pre-existing high severity vulnerability in xlsx package (Prototype Pollution and ReDoS). This is a dependency issue, not introduced by these changes. Consider updating or replacing xlsx if this is a concern.
@@ -120,4 +128,5 @@ The application has been deployed to Vercel but is experiencing multiple product
 - Icon paths should not include `/public/` prefix in production
 - Vite environment variables must use `VITE_` prefix to be exposed to client
 - Service workers must be in the root of the output directory
+- **React useEffect race condition:** When a component both saves to and loads from the same data source (like project state), avoid watching the data itself as a dependency - only watch identifiers (like project.id). Otherwise you create a circular update loop where save triggers reload triggers save, etc.
 
