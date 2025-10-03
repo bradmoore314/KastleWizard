@@ -153,9 +153,9 @@ export const generatePdfBlob = async (
             // FIX: Changed `fillColor` to `color` and `fillOpacity` to `opacity` to match pdf-lib API.
             page.drawSvgPath(fovPathData, {
                 color: hexToRgb(edit.data.color || '#3b82f6'),
-                opacity: 0.3,
+                opacity: 0.4,
                 borderColor: hexToRgb(edit.data.color || '#3b82f6'),
-                borderWidth: 1.5,
+                borderWidth: 2,
                 borderLineCap: LineCapStyle.Round,
                 borderDashArray: [5, 2],
             });
