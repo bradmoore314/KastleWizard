@@ -63,25 +63,25 @@ const PartnerDirectory: React.FC<PartnerDirectoryProps> = ({ onFinish }) => {
 
     return (
         <div className="w-full h-full flex flex-col bg-background text-on-surface">
-            <header className="p-4 md:p-6 border-b border-white/10 flex-shrink-0 flex justify-between items-center bg-surface">
-                <h1 className="text-2xl font-bold flex items-center gap-3">
-                    <div className="w-2 h-8 bg-primary-400 rounded-full"></div>
+            <header className="p-2 sm:p-4 md:p-6 border-b border-white/10 flex-shrink-0 flex justify-between items-center bg-surface">
+                <h1 className="text-lg sm:text-2xl font-bold flex items-center gap-2 sm:gap-3">
+                    <div className="w-1.5 h-6 sm:w-2 sm:h-8 bg-primary-400 rounded-full"></div>
                     Partners Directory
                 </h1>
-                <button onClick={onFinish} className="p-2 rounded-full hover:bg-white/10">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button onClick={onFinish} className="p-1.5 sm:p-2 rounded-full hover:bg-white/10">
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </header>
 
-            <div className="flex-1 overflow-y-auto p-4 md:p-6">
-                <div className="bg-gradient-to-br from-surface to-surface/80 p-8 rounded-xl border border-white/10 shadow-lg">
+            <div className="flex-1 overflow-y-auto p-2 sm:p-4 md:p-6">
+                <div className="bg-gradient-to-br from-surface to-surface/80 p-4 sm:p-6 md:p-8 rounded-xl border border-white/10 shadow-lg">
 
                     {/* Search and Filter Controls */}
-                    <div className="mb-8 flex flex-col sm:flex-row gap-4 items-center">
+                    <div className="mb-4 sm:mb-8 flex flex-col sm:flex-row gap-2 sm:gap-4 items-center">
                         <div className="relative flex-1 max-w-md">
-                            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface-variant" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-on-surface-variant" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                             <input
@@ -89,16 +89,16 @@ const PartnerDirectory: React.FC<PartnerDirectoryProps> = ({ onFinish }) => {
                                 placeholder="Search partners, locations, or contacts..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full bg-background/50 backdrop-blur-sm p-4 pl-12 rounded-lg border border-white/20 text-on-surface focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-all duration-200"
+                                className="w-full bg-background/50 backdrop-blur-sm p-2 pl-10 sm:p-4 sm:pl-12 rounded-lg border border-white/20 text-xs sm:text-sm text-on-surface focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-all duration-200"
                             />
                         </div>
 
-                        <div className="flex items-center gap-3">
-                            <label className="text-sm font-semibold text-on-surface">Sort by:</label>
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <label className="text-xs sm:text-sm font-semibold text-on-surface">Sort by:</label>
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value as 'partner' | 'addresses')}
-                                className="bg-background/50 backdrop-blur-sm p-3 rounded-lg border border-white/20 text-on-surface focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-all duration-200"
+                                className="bg-background/50 backdrop-blur-sm p-2 sm:p-3 rounded-lg border border-white/20 text-xs sm:text-sm text-on-surface focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-all duration-200"
                             >
                                 <option value="partner">Partner Name</option>
                                 <option value="addresses">Location</option>

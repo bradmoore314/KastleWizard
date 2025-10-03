@@ -38,13 +38,13 @@ const QuestionInput: React.FC<QuestionInputProps> = ({ question, value, derivedV
 
     if (options?.every(opt => ['Yes', 'No', 'Unknown', 'N/A'].includes(opt))) {
         return (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1 sm:gap-2">
                 {options.map(opt => (
                      <button
                         key={opt}
                         type="button"
                         onClick={() => onChange(opt)}
-                        className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${value === opt ? 'bg-primary-600 text-white' : 'bg-background hover:bg-white/10'}`}
+                        className={`px-2 py-1 sm:px-3 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-colors ${value === opt ? 'bg-primary-600 text-white' : 'bg-background hover:bg-white/10'}`}
                      >
                          {opt}
                      </button>
@@ -100,25 +100,25 @@ const CategorySection: React.FC<CategorySectionProps> = ({ categoryKey, project,
     return (
         <div className="bg-surface rounded-xl border border-white/10">
             <button
-                className="w-full flex justify-between items-center p-4 text-left"
+                className="w-full flex justify-between items-center p-2 sm:p-4 text-left"
                 onClick={() => setIsOpen(!isOpen)}
                 aria-expanded={isOpen}
             >
-                <h2 className="text-xl font-bold flex items-center gap-3">
+                <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2 sm:gap-3">
                     <span>{category.icon}</span>
                     {category.title}
                 </h2>
-                <ChevronDown className={`w-6 h-6 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-5 h-5 sm:w-6 sm:h-6 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
             </button>
             {isOpen && (
-                <div className="p-4 border-t border-white/10 space-y-4">
+                <div className="p-2 sm:p-4 border-t border-white/10 space-y-2 sm:space-y-4">
                     {questions.map(q => {
                         const derivedValue = q.derivation ? q.derivation(project) : undefined;
                         
                         return (
-                            <div key={q.id} className="grid md:grid-cols-2 gap-4 items-start border-b border-white/5 pb-4 last:border-b-0 last:pb-0">
+                            <div key={q.id} className="grid md:grid-cols-2 gap-2 sm:gap-4 items-start border-b border-white/5 pb-2 sm:pb-4 last:border-b-0 last:pb-0">
                                 <div className="text-on-surface-variant">
-                                    <p className="font-semibold text-on-surface">{q.text}</p>
+                                    <p className="font-semibold text-on-surface text-sm sm:text-base">{q.text}</p>
                                     <p className="text-xs mt-1">Assigned to: {q.assignedTo}</p>
                                 </div>
                                 <div>
@@ -195,19 +195,19 @@ const Checklist: React.FC<ChecklistProps> = ({ project, onRunAnalysis, isAnalyzi
     }, [project, statusFilter, assigneeFilter, hasTakeoverCamera]);
 
     return (
-        <div className="w-full h-full p-4 md:p-8 overflow-y-auto text-on-surface scrolling-touch bg-background">
+        <div className="w-full h-full p-2 sm:p-4 md:p-8 overflow-y-auto text-on-surface scrolling-touch bg-background">
             <div className="max-w-4xl mx-auto">
-                 <div className="flex flex-col md:flex-row justify-between md:items-center mb-4 gap-4">
+                 <div className="flex flex-col md:flex-row justify-between md:items-center mb-2 sm:mb-4 gap-2 sm:gap-4">
                     <div>
-                        <h1 className="text-3xl md:text-4xl font-bold">Project Checklist</h1>
-                        <p className="text-md md:text-lg text-on-surface-variant mt-2">
+                        <h1 className="text-xl sm:text-3xl md:text-4xl font-bold">Project Checklist</h1>
+                        <p className="text-sm sm:text-md md:text-lg text-on-surface-variant mt-1 sm:mt-2">
                             A comprehensive list of questions to ensure project success.
                         </p>
                     </div>
                     <button
                         onClick={onRunAnalysis}
                         disabled={isAnalyzing}
-                        className="flex items-center justify-center gap-2 px-4 py-2 bg-surface text-on-surface rounded-lg hover:bg-white/10 transition-colors border border-white/10 disabled:opacity-50 disabled:cursor-not-allowed self-start md:self-center"
+                        className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-surface text-on-surface rounded-lg hover:bg-white/10 transition-colors border border-white/10 disabled:opacity-50 disabled:cursor-not-allowed self-start md:self-center text-xs sm:text-sm"
                         title="Run AI Quote Analysis"
                     >
                         {isAnalyzing ? (

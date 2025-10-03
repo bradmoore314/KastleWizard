@@ -72,7 +72,7 @@ const GalleryView: React.FC<GalleryViewProps> = ({ images, floorplans, onViewIma
     const GroupButton: React.FC<{ value: GroupByOption; children: React.ReactNode }> = ({ value, children }) => (
         <button
             onClick={() => setGroupBy(value)}
-            className={`flex-1 py-1.5 px-3 rounded-md text-sm font-medium transition-colors ${groupBy === value ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}
+            className={`flex-1 py-1 px-2 sm:py-1.5 sm:px-3 rounded-md text-xs sm:text-sm font-medium transition-colors ${groupBy === value ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}
         >
             {children}
         </button>
@@ -80,14 +80,14 @@ const GalleryView: React.FC<GalleryViewProps> = ({ images, floorplans, onViewIma
 
     return (
         <div className="w-full h-full flex flex-col text-on-surface">
-            <header className="p-4 md:px-8 md:py-6 border-b border-white/10 flex-shrink-0">
-                <h1 className="text-2xl md:text-3xl font-bold">Image Gallery</h1>
-                <p className="text-md text-on-surface-variant">All photos for project: {projectName}</p>
+            <header className="p-2 sm:p-4 md:px-8 md:py-6 border-b border-white/10 flex-shrink-0">
+                <h1 className="text-lg sm:text-2xl md:text-3xl font-bold">Image Gallery</h1>
+                <p className="text-sm sm:text-md text-on-surface-variant">All photos for project: {projectName}</p>
             </header>
 
-            <div className="p-4 md:px-8 flex-shrink-0 bg-surface/50 border-b border-white/10">
-                <div className="flex items-center gap-4">
-                    <span className="text-sm font-semibold text-on-surface-variant">Group by:</span>
+            <div className="p-2 sm:p-4 md:px-8 flex-shrink-0 bg-surface/50 border-b border-white/10">
+                <div className="flex items-center gap-2 sm:gap-4">
+                    <span className="text-xs sm:text-sm font-semibold text-on-surface-variant">Group by:</span>
                      <div className="flex items-center gap-1 bg-background rounded-lg p-1 max-w-sm">
                         <GroupButton value="date">Date</GroupButton>
                         <GroupButton value="floorplan">Floorplan</GroupButton>

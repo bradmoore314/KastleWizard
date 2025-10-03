@@ -73,20 +73,20 @@ const SubcontractorList: React.FC<SubcontractorListProps> = ({ onFinish }) => {
 
     return (
         <div className="w-full h-full flex flex-col bg-background text-on-surface">
-            <header className="p-3 md:p-4 border-b border-white/10 flex-shrink-0 flex justify-between items-center bg-surface">
-                <h1 className="text-lg md:text-xl font-bold">Subcontractor Reference List</h1>
-                <button onClick={onFinish} className="p-2 rounded-full hover:bg-white/10">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <header className="p-2 sm:p-3 md:p-4 border-b border-white/10 flex-shrink-0 flex justify-between items-center bg-surface">
+                <h1 className="text-base sm:text-lg md:text-xl font-bold">Subcontractor Reference List</h1>
+                <button onClick={onFinish} className="p-1.5 sm:p-2 rounded-full hover:bg-white/10">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </header>
 
-            <div className="flex-1 overflow-hidden p-3 md:p-4">
+            <div className="flex-1 overflow-hidden p-2 sm:p-3 md:p-4">
                 {/* Search Bar */}
-                <div className="mb-4">
+                <div className="mb-2 sm:mb-4">
                     <div className="relative max-w-md mx-auto">
-                        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-on-surface-variant" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                         <input
@@ -94,7 +94,7 @@ const SubcontractorList: React.FC<SubcontractorListProps> = ({ onFinish }) => {
                             placeholder="Search partners..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-background/50 backdrop-blur-sm p-3 pl-10 rounded-lg border border-white/20 text-sm focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-all duration-200"
+                            className="w-full bg-background/50 backdrop-blur-sm p-2 pl-8 sm:p-3 sm:pl-10 rounded-lg border border-white/20 text-xs sm:text-sm focus:border-primary-400 focus:ring-2 focus:ring-primary-400/20 transition-all duration-200"
                         />
                     </div>
                 </div>

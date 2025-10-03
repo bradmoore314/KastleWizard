@@ -75,9 +75,9 @@ type CalculatorType = 'gateway' | 'conduit' | 'labor' | 'partner-budget' | 'tee'
 // Wrapper for new calculators
 const CalculatorWrapper: React.FC<{ title: string, onBack: () => void, children: React.ReactNode }> = ({ title, onBack, children }) => (
     <div className="w-full h-full flex flex-col bg-background">
-        <header className="p-4 md:p-6 border-b border-white/10 flex-shrink-0 flex justify-between items-center bg-surface">
-            <h1 className="text-2xl font-bold">{title}</h1>
-            <button onClick={onBack} className="p-2 rounded-full hover:bg-white/10"><CloseIcon className="w-6 h-6" /></button>
+        <header className="p-2 sm:p-4 md:p-6 border-b border-white/10 flex-shrink-0 flex justify-between items-center bg-surface">
+            <h1 className="text-lg sm:text-2xl font-bold">{title}</h1>
+            <button onClick={onBack} className="p-1.5 sm:p-2 rounded-full hover:bg-white/10"><CloseIcon className="w-5 h-5 sm:w-6 sm:h-6" /></button>
         </header>
         <div className="flex-1 overflow-y-auto">
             {children}
@@ -98,16 +98,16 @@ const CalculatorSelectionScreen: React.FC<{ onSelect: (calc: CalculatorType) => 
     ];
 
     return (
-        <div className="w-full h-full p-4 md:p-8 flex flex-col items-center justify-center bg-background">
-            <div className="max-w-4xl text-center">
-                <h1 className="text-4xl font-bold mb-2">Tools</h1>
-                <p className="text-lg text-on-surface-variant mb-8">Select a tool to assist with project planning and estimation.</p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+        <div className="w-full h-full p-2 sm:p-4 md:p-8 flex flex-col items-center justify-center bg-background">
+            <div className="max-w-4xl text-center w-full">
+                <h1 className="text-2xl sm:text-4xl font-bold mb-1 sm:mb-2">Tools</h1>
+                <p className="text-sm sm:text-lg text-on-surface-variant mb-4 sm:mb-8">Select a tool to assist with project planning and estimation.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 md:gap-6">
                     {calcOptions.map(({ key, title, description, Icon }) => (
-                        <button key={key} onClick={() => onSelect(key as any)} className="bg-surface p-4 md:p-6 rounded-xl border border-white/10 text-left hover:border-primary-500 hover:bg-primary-950/30 transition-all duration-300 transform hover:-translate-y-1">
-                            <Icon className="w-8 h-8 text-primary-400 mb-3" />
-                            <h2 className="text-lg md:text-xl font-bold text-on-surface mb-1 md:mb-2">{title}</h2>
-                            <p className="text-sm md:text-base text-on-surface-variant">{description}</p>
+                        <button key={key} onClick={() => onSelect(key as any)} className="bg-surface p-3 sm:p-4 md:p-6 rounded-xl border border-white/10 text-left hover:border-primary-500 hover:bg-primary-950/30 transition-all duration-300 transform hover:-translate-y-1">
+                            <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-primary-400 mb-2 sm:mb-3" />
+                            <h2 className="text-base sm:text-lg md:text-xl font-bold text-on-surface mb-1 sm:mb-2">{title}</h2>
+                            <p className="text-xs sm:text-sm md:text-base text-on-surface-variant">{description}</p>
                         </button>
                     ))}
                 </div>
