@@ -1064,9 +1064,7 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
 
     // Touch event handlers for mobile support
     const handleTouchStart = useCallback((e: React.TouchEvent) => {
-        // Only prevent default for specific interactions that need it
         if (e.touches.length === 1) {
-            // Single touch - use the same coordinate conversion as mouse events
             const touch = e.touches[0];
             const { x, y } = screenToPdfCoords(touch.clientX, touch.clientY);
             dragStartCoords.current = { x: touch.clientX, y: touch.clientY };
@@ -1100,8 +1098,7 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
                 return;
             }
 
-            // Handle touch start the same way as mouse down
-            // Disable panning when any items are selected
+            // Handle other touch interactions
             if (props.selectedTool === 'pan' && props.selectedEditIds.length === 0) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -1117,38 +1114,14 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
                 return;
             }
 
-            switch (props.selectedTool) {
-                case 'draw':
-                case 'rectangle':
-                case 'conduit': {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const type = props.selectedTool;
-                    setCurrentDrawing({
-                        id: crypto.randomUUID(), type, path: `M ${x} ${y}`, x, y, width: 0, height: 0,
-                        color: type === 'conduit' ? '#0000ff' : '#ff0000', strokeWidth: type === 'conduit' ? 3 : 2,
-                        originalWidth: 1, originalHeight: 1, pageIndex: currentPage - 1, rotation: 0,
-                        fillColor: '#ff0000', fillOpacity: 0.2
-                    } as any);
-                    break;
-                }
-                case 'select':
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setIsSelecting(true);
-                    setSelectionBox({ x, y, width: 0, height: 0 });
-                    break;
-                case 'place-item':
-                    // For place-item, allow normal touch behavior (zooming/panning) only when no items selected
-                    if (props.selectedEditIds.length === 0) {
-                        // Allow zooming/panning when no items selected
-                    } else {
-                        // Disable zooming/panning when items are selected
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }
-                    break;
+            // For drawing tools and selection, prevent default
+            if (props.selectedTool === 'draw' || props.selectedTool === 'rectangle' || props.selectedTool === 'conduit' || props.selectedTool === 'select') {
+                e.preventDefault();
+                e.stopPropagation();
             }
+
+            // For place-item and normal touches, allow default behavior for zoom/pan
+            // The touch will be handled by the browser's default touch behavior for the floorplan
         } else if (e.touches.length === 2 && props.selectedEditIds.length === 0) {
             // Two finger touch - prepare for pinch zoom (only when no items selected)
             const touch1 = e.touches[0];
