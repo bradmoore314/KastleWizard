@@ -1052,10 +1052,14 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
 
     // Touch event handlers for mobile support
     const handleTouchStart = useCallback((e: React.TouchEvent) => {
-        e.preventDefault();
+        // Only prevent default for multi-touch or when we're in a drawing/editing mode
+        if (e.touches.length > 1 || props.selectedTool !== 'select' || props.selectedEditIds.length > 0) {
+            e.preventDefault();
+        }
         e.stopPropagation();
+        
         if (e.touches.length === 1) {
-            // Single touch - convert to mouse event
+            // Single touch - convert to mouse event with proper coordinates
             const touch = e.touches[0];
             const mouseEvent = {
                 ...e,
@@ -1085,8 +1089,12 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
     }, [handleMouseDown, pan]);
 
     const handleTouchMove = useCallback((e: React.TouchEvent) => {
-        e.preventDefault();
+        // Only prevent default when we're actively dragging or pinching
+        if (dragState || e.touches.length > 1) {
+            e.preventDefault();
+        }
         e.stopPropagation();
+        
         if (e.touches.length === 1 && dragState && dragState.type !== 'pinch') {
             // Single touch move - convert to mouse event
             const touch = e.touches[0];
@@ -1126,8 +1134,12 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
     }, [handleMouseMove, dragState, zoom, pan, updateViewport]);
 
     const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-        e.preventDefault();
+        // Only prevent default when we're ending a drag or pinch
+        if (dragState || e.touches.length === 0) {
+            e.preventDefault();
+        }
         e.stopPropagation();
+        
         if (e.touches.length === 0) {
             // All touches ended
             if (dragState?.type === 'pinch') {
