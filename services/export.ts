@@ -364,37 +364,37 @@ export const generatePdfBlob = async (
 
             // Create table headers
             const tableStartY = currentY;
-            const colWidths = [80, 120, 100, 150, 100]; // Location, Type, Status, Notes, Floor
+            const colWidths = [100, 180, 80, 120, 70]; // Location, Type/Details, Status, Notes, Floor
             let colX = margin;
 
             // Draw table header
             const headers = ['Location', 'Type/Details', 'Status', 'Notes', 'Floor'];
             headers.forEach((header, i) => {
                 summaryPage.drawText(header, {
-                    x: colX,
-                    y: currentY,
+                    x: colX + 2,
+                    y: currentY - 2,
                     font: fontBold,
                     size: 10,
-                    color: rgb(1, 1, 1)
+                    color: rgb(0, 0, 0)
                 });
                 // Draw header background
                 summaryPage.drawRectangle({
                     x: colX - 2,
-                    y: currentY - 12,
+                    y: currentY - 14,
                     width: colWidths[i],
-                    height: 15,
-                    color: rgb(0.9, 0.9, 0.9),
+                    height: 16,
+                    color: rgb(0.95, 0.95, 0.95),
                     borderColor: rgb(0, 0, 0),
                     borderWidth: 0.5
                 });
                 colX += colWidths[i];
             });
-            currentY -= 20;
+            currentY -= 22;
 
             // Draw each equipment item
             for (const item of items) {
-                if (currentY < margin + 50) {
-                    // Add new page for next equipment type
+                if (currentY < margin + 60) {
+                    // Add new page if not enough space (accounting for larger row height)
                     break;
                 }
 
@@ -405,11 +405,12 @@ export const generatePdfBlob = async (
                     ? (item.data as any).location || 'Not specified'
                     : (item.data as any).label || 'Not specified';
 
+                // Location
                 summaryPage.drawText(location, {
-                    x: colX,
-                    y: currentY,
+                    x: colX + 2,
+                    y: currentY - 2,
                     font: font,
-                    size: 9,
+                    size: 8,
                     color: rgb(0, 0, 0)
                 });
 
@@ -436,38 +437,38 @@ export const generatePdfBlob = async (
                     typeDetails = (item.data as any).label || 'Marker';
                 }
 
-                // Truncate if too long
-                if (typeDetails.length > 25) {
-                    typeDetails = typeDetails.substring(0, 22) + '...';
+                // Truncate if too long and wrap to multiple lines if needed
+                if (typeDetails.length > 35) {
+                    typeDetails = typeDetails.substring(0, 32) + '...';
                 }
 
                 summaryPage.drawText(typeDetails, {
-                    x: colX,
-                    y: currentY,
+                    x: colX + 2,
+                    y: currentY - 2,
                     font: font,
-                    size: 9,
+                    size: 8,
                     color: rgb(0, 0, 0)
                 });
 
                 colX += colWidths[1];
 
-                // Status (for devices only)
+                // Status
                 let status = 'Active';
                 if (item.type === 'device') {
                     status = (item.data as any).status || 'Active';
                 }
 
                 summaryPage.drawText(status, {
-                    x: colX,
-                    y: currentY,
+                    x: colX + 2,
+                    y: currentY - 2,
                     font: font,
-                    size: 9,
+                    size: 8,
                     color: status === 'Active' ? rgb(0, 0.5, 0) : rgb(0.5, 0, 0)
                 });
 
                 colX += colWidths[2];
 
-                // Notes (truncated)
+                // Notes
                 let notes = '';
                 if (item.type === 'device') {
                     notes = (item.data as any).notes || '';
@@ -475,15 +476,15 @@ export const generatePdfBlob = async (
                     notes = (item.data as any).notes || '';
                 }
 
-                if (notes.length > 30) {
-                    notes = notes.substring(0, 27) + '...';
+                if (notes.length > 25) {
+                    notes = notes.substring(0, 22) + '...';
                 }
 
                 summaryPage.drawText(notes || '-', {
-                    x: colX,
-                    y: currentY,
+                    x: colX + 2,
+                    y: currentY - 2,
                     font: font,
-                    size: 9,
+                    size: 8,
                     color: rgb(0, 0, 0)
                 });
 
@@ -498,25 +499,25 @@ export const generatePdfBlob = async (
                 }
 
                 summaryPage.drawText(floor, {
-                    x: colX,
-                    y: currentY,
+                    x: colX + 2,
+                    y: currentY - 2,
                     font: font,
-                    size: 9,
+                    size: 8,
                     color: rgb(0, 0, 0)
                 });
 
                 // Draw row border
                 summaryPage.drawRectangle({
                     x: margin - 2,
-                    y: currentY - 12,
+                    y: currentY - 16,
                     width: colWidths.reduce((a, b) => a + b, 0) + 4,
-                    height: 15,
+                    height: 18,
                     borderColor: rgb(0.8, 0.8, 0.8),
                     borderWidth: 0.5,
-                    opacity: 0.5
+                    opacity: 0.3
                 });
 
-                currentY -= 18;
+                currentY -= 22;
             }
 
             currentY -= 10; // Space between equipment types
