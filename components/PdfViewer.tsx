@@ -1028,6 +1028,10 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
         }
         
         if (props.selectedTool === 'place-item') {
+            // Debug: Log marker placement
+            if (process.env.NODE_ENV === 'development') {
+                console.log('Placing item at coordinates:', { x, y, tool: props.selectedTool });
+            }
             props.onPlaceItem(x, y);
         }
     }, [dragState, currentDrawing, isSelecting, selectionBox, screenToPdfCoords, updateEdits, props, edits, currentPage, dragStartCoords]);
@@ -1078,11 +1082,12 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
             // Debug: Log coordinates to help diagnose placement issues
             if (process.env.NODE_ENV === 'development') {
                 const { x, y } = screenToPdfCoords(touch.clientX, touch.clientY);
-                console.log('Touch coordinates:', {
+                console.log('Touch start coordinates:', {
                     screen: { x: touch.clientX, y: touch.clientY },
                     pdf: { x, y },
                     zoom,
-                    pan
+                    pan,
+                    tool: props.selectedTool
                 });
             }
             
@@ -1163,9 +1168,20 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
                     ...e,
                     clientX: 0,
                     clientY: 0,
+                    button: 0,
                     preventDefault: () => e.preventDefault(),
                     stopPropagation: () => e.stopPropagation()
                 } as React.MouseEvent;
+                
+                // Debug: Log touch end
+                if (process.env.NODE_ENV === 'development') {
+                    console.log('Touch end - calling handleMouseUp:', {
+                        tool: props.selectedTool,
+                        dragState: dragState?.type,
+                        hasDragState: !!dragState
+                    });
+                }
+                
                 handleMouseUp(mouseEvent);
             }
         }
