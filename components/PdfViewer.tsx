@@ -738,7 +738,14 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
         const { x, y } = screenToPdfCoords(e.clientX, e.clientY);
         dragStartCoords.current = { x: e.clientX, y: e.clientY };
         
-        if (props.selectedTool === 'pan' || e.button === 1) {
+        // Only allow panning when in pan mode AND nothing is selected
+        if (props.selectedTool === 'pan' && props.selectedEditIds.length === 0) {
+            setDragState({ type: 'move', editId: 'pan', originalEdit: {x:pan.x, y:pan.y} as any, startX: e.clientX, startY: e.clientY });
+            return;
+        }
+        
+        // Allow middle mouse button panning regardless of tool
+        if (e.button === 1) {
             setDragState({ type: 'move', editId: 'pan', originalEdit: {x:pan.x, y:pan.y} as any, startX: e.clientX, startY: e.clientY });
             return;
         }
@@ -1052,10 +1059,8 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
 
     // Touch event handlers for mobile support
     const handleTouchStart = useCallback((e: React.TouchEvent) => {
-        // Only prevent default for multi-touch or when we're in a drawing/editing mode
-        if (e.touches.length > 1 || props.selectedTool !== 'select' || props.selectedEditIds.length > 0) {
-            e.preventDefault();
-        }
+        // Always prevent default for touch events on floorplan to avoid page interactions
+        e.preventDefault();
         e.stopPropagation();
         
         if (e.touches.length === 1) {
@@ -1069,6 +1074,18 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
                 preventDefault: () => e.preventDefault(),
                 stopPropagation: () => e.stopPropagation()
             } as React.MouseEvent;
+            
+            // Debug: Log coordinates to help diagnose placement issues
+            if (process.env.NODE_ENV === 'development') {
+                const { x, y } = screenToPdfCoords(touch.clientX, touch.clientY);
+                console.log('Touch coordinates:', {
+                    screen: { x: touch.clientX, y: touch.clientY },
+                    pdf: { x, y },
+                    zoom,
+                    pan
+                });
+            }
+            
             handleMouseDown(mouseEvent);
         } else if (e.touches.length === 2) {
             // Two finger touch - prepare for pinch zoom
@@ -1089,10 +1106,8 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
     }, [handleMouseDown, pan]);
 
     const handleTouchMove = useCallback((e: React.TouchEvent) => {
-        // Only prevent default when we're actively dragging or pinching
-        if (dragState || e.touches.length > 1) {
-            e.preventDefault();
-        }
+        // Always prevent default for touch events on floorplan
+        e.preventDefault();
         e.stopPropagation();
         
         if (e.touches.length === 1 && dragState && dragState.type !== 'pinch') {
@@ -1134,10 +1149,8 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
     }, [handleMouseMove, dragState, zoom, pan, updateViewport]);
 
     const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-        // Only prevent default when we're ending a drag or pinch
-        if (dragState || e.touches.length === 0) {
-            e.preventDefault();
-        }
+        // Always prevent default for touch events on floorplan
+        e.preventDefault();
         e.stopPropagation();
         
         if (e.touches.length === 0) {
