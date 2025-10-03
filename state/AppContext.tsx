@@ -1,6 +1,6 @@
 import React, { createContext, useReducer, useContext, useEffect, Dispatch, useState } from 'react';
 import { Project, Floorplan, AnyEdit, DeviceEdit, DeviceData, MarkerData, DeviceFormConfig, EquipmentImage, Command, GatewayConfiguration, MarkerEdit, TextEdit, DrawingEdit, RectangleEdit, ConduitEdit, AuditLogEntry, ElevatorLetterFormData } from '../types';
-import { migrateProjectDataToV2, getClientUserId, camelCaseToTitle } from '../utils';
+import { migrateProjectDataToV2, getClientUserId, camelCaseToTitle, getEditIconKey } from '../utils';
 import { defaultFormConfig } from '../services/formConfig';
 import { EQUIPMENT_CONFIG } from '../services/equipmentConfig';
 import { saveFile, deleteFile, getAllFileIds } from '../services/fileStorage';
@@ -352,6 +352,15 @@ const appReducer = (state: AppState, action: Action): AppState => {
             const { edit, isPlaced } = action.payload;
             if (!activeProject) return state;
         
+            // Auto-show layer for the new item
+            let newVisibleLayers = state.visibleLayers;
+            if (edit.type === 'device' || edit.type === 'marker') {
+                const iconKey = getEditIconKey(edit);
+                if (!newVisibleLayers.has(iconKey)) {
+                    newVisibleLayers = new Set([...newVisibleLayers, iconKey]);
+                }
+            }
+        
             const newProjects = state.projects.map(p => {
                 if (p.id !== activeProjectId) return p;
         
@@ -381,7 +390,7 @@ const appReducer = (state: AppState, action: Action): AppState => {
                 }
             });
         
-            return { ...state, projects: newProjects };
+            return { ...state, projects: newProjects, visibleLayers: newVisibleLayers };
         }
         
         case 'ADD_PLACED_EDITS': {

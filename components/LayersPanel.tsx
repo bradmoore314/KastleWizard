@@ -35,6 +35,15 @@ const LayersPanel: React.FC = () => {
             }
         });
     };
+
+    const handleShowAllLayers = () => {
+        // Make all layers visible
+        Object.keys(EQUIPMENT_CONFIG).forEach(key => {
+            if (!visibleLayers.has(key)) {
+                dispatch({ type: 'TOGGLE_LAYER_VISIBILITY', payload: key });
+            }
+        });
+    };
     
     // Determine if the layer group is visible (if at least one sub-item is visible)
     const isLayerGroupVisible = (keys: string[]) => keys.some(key => visibleLayers.has(key));
@@ -50,6 +59,14 @@ const LayersPanel: React.FC = () => {
             </button>
             {isOpen && (
                 <div className="p-3 border-t border-white/10">
+                    <div className="mb-3">
+                        <button 
+                            onClick={handleShowAllLayers}
+                            className="w-full px-3 py-2 text-sm bg-primary-600 hover:bg-primary-700 text-white rounded-md transition-colors"
+                        >
+                            Show All Layers
+                        </button>
+                    </div>
                     <ul className="space-y-2">
                         {Object.entries(LAYER_KEYS).map(([label, keys]) => (
                             <li key={label} className="flex items-center justify-between gap-3">
