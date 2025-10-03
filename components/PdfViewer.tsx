@@ -731,12 +731,16 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
         e.preventDefault();
         const scaleFactor = 1.1;
         const newZoom = e.deltaY < 0 ? zoom * scaleFactor : zoom / scaleFactor;
+
+        // Ensure zoom stays within reasonable bounds
+        const clampedZoom = Math.max(0.1, Math.min(5, newZoom));
+
         const rect = containerRef.current!.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
-        const newPanX = mouseX - (mouseX - pan.x) * (newZoom / zoom);
-        const newPanY = mouseY - (mouseY - pan.y) * (newZoom / zoom);
-        updateViewport(newZoom, { x: newPanX, y: newPanY });
+        const newPanX = mouseX - (mouseX - pan.x) * (clampedZoom / zoom);
+        const newPanY = mouseY - (mouseY - pan.y) * (clampedZoom / zoom);
+        updateViewport(clampedZoom, { x: newPanX, y: newPanY });
     }, [zoom, pan, updateViewport, props.selectedEditIds]);
 
     const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -1261,21 +1265,19 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
         >
-            <div
-                style={{
-                    transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-                    transformOrigin: 'top left',
-                    width: pageDim.width,
-                    height: pageDim.height,
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    willChange: 'transform',
-                    pointerEvents: 'none',
-                    contain: 'layout style paint'
-                }}
-            >
-                <canvas ref={canvasRef} className="bg-white shadow-lg absolute top-0 left-0" style={{ pointerEvents: 'auto' }} />
+                <div
+                    style={{
+                        transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+                        transformOrigin: 'top left',
+                        width: pageDim.width,
+                        height: pageDim.height,
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        imageRendering: 'crisp-edges'
+                    }}
+                >
+                <canvas ref={canvasRef} className="bg-white shadow-lg absolute top-0 left-0" style={{ imageRendering: 'crisp-edges' }} />
                 <canvas ref={gridCanvasRef} className="absolute top-0 left-0 pointer-events-none" />
                 <svg
                     className="absolute top-0 left-0"
