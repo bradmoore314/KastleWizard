@@ -3,7 +3,7 @@ import { Project, StreamCamera, Stream, Gateway, CameraData, DeviceEdit, Gateway
 import { useFocusTrap } from '../hooks/useFocusTrap';
 import { getBitrateForResolution, parseResolution, parseFrameRate } from '../utils';
 // FIX: Update imports to use exported icon components.
-import { HelpCircleIcon, AddIcon, DeleteIcon, CopyIcon, ChevronsRightIcon, VideoGatewayIcon, CameraIcon, CloseIcon } from './Icons';
+import { HelpCircleIcon, AddIcon, DeleteIcon, CopyIcon, ChevronsRightIcon, VideoGatewayIcon, CameraIcon, CloseIcon, ChevronDownIcon } from './Icons';
 import { toast } from 'react-hot-toast';
 import { useAppDispatch } from '../state/AppContext';
 
@@ -64,6 +64,7 @@ const GatewayCalculator: React.FC<GatewayCalculatorProps> = ({ project, onFinish
     const [dragOverTarget, setDragOverTarget] = useState<'unassigned' | number | null>(null);
     const [isHelpOpen, setIsHelpOpen] = useState(false);
     const [isImportMode, setIsImportMode] = useState(false);
+    const [openDropdown, setOpenDropdown] = useState<string | null>(null);
     
     const viewRef = useFocusTrap<HTMLDivElement>(true);
     const dispatch = useAppDispatch();
@@ -133,6 +134,18 @@ const GatewayCalculator: React.FC<GatewayCalculatorProps> = ({ project, onFinish
             didMountRef.current = true;
         }
     }, [saveConfiguration]);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (openDropdown && !(event.target as Element).closest('.dropdown-container')) {
+                setOpenDropdown(null);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [openDropdown]);
 
 
     const handleImportFromProject = () => {
@@ -387,6 +400,47 @@ const GatewayCalculator: React.FC<GatewayCalculatorProps> = ({ project, onFinish
         setDraggedStream(null);
     };
 
+    const handleAssignToGateway = (stream: Stream, gatewayId: number) => {
+        // Remove from unassigned streams
+        const newUnassignedStreams = unassignedStreams.filter(s => s.id !== stream.id);
+
+        // Remove from current gateway if assigned
+        let newGateways = gateways.map(g => ({
+            ...g,
+            assignedStreams: g.assignedStreams.filter(s => s.id !== stream.id)
+        }));
+
+        // Add to selected gateway
+        newGateways = newGateways.map(g =>
+            g.id === gatewayId
+                ? { ...g, assignedStreams: [...g.assignedStreams, stream] }
+                : g
+        );
+
+        setUnassignedStreams(newUnassignedStreams);
+        setGateways(newGateways);
+    };
+
+    const getAvailableGateways = (stream: Stream) => {
+        return gateways.map(gateway => {
+            const spec = GATEWAY_SPECS[gateway.type];
+            const currentUsage = gateway.assignedStreams.reduce((acc, s) => ({
+                streams: acc.streams + 1,
+                throughput: acc.throughput + s.throughput,
+                storage: acc.storage + s.storage
+            }), { streams: 0, throughput: 0, storage: 0 });
+
+            const hasCapacity = currentUsage.streams + 1 <= spec.maxStreams &&
+                              currentUsage.throughput + stream.throughput <= spec.maxThroughput &&
+                              currentUsage.storage + stream.storage <= spec.maxStorage;
+
+            return {
+                ...gateway,
+                hasCapacity
+            };
+        }).filter(g => g.hasCapacity);
+    };
+
     const handleAutoAssign = () => {
         let streams = [...unassignedStreams, ...gateways.flatMap(g => g.assignedStreams)];
         let gws = gateways.map(g => ({ ...g, assignedStreams: [] as Stream[] }));
@@ -578,35 +632,75 @@ const GatewayCalculator: React.FC<GatewayCalculatorProps> = ({ project, onFinish
     );
     
     const renderStep3 = () => (
-         <div className="p-4 md:p-8">
-            <h2 className="text-2xl font-bold">Step 3: Assign Streams to Gateways</h2>
-            <p className="text-on-surface-variant mt-1">Drag and drop streams to assign them to a gateway.</p>
-            
-            <div className="mt-6 flex justify-end gap-2">
-                 <button onClick={handleAutoAssign} className="px-4 py-2 text-sm bg-surface hover:bg-white/10 border border-white/20 rounded-md">Auto-assign</button>
+         <div className="p-3 md:p-6">
+            <h2 className="text-xl md:text-2xl font-bold">Step 3: Assign Streams to Gateways</h2>
+            <p className="text-on-surface-variant mt-1 text-sm">Drag and drop streams to assign them to a gateway.</p>
+
+            <div className="mt-4 flex justify-end gap-2">
+                 <button onClick={handleAutoAssign} className="px-3 py-1.5 text-sm bg-surface hover:bg-white/10 border border-white/20 rounded-md">Auto-assign</button>
             </div>
             
-            <div className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div 
-                    className={`lg:col-span-1 bg-surface p-4 rounded-lg border-2 h-fit transition-colors ${dragOverTarget === 'unassigned' ? 'border-primary-500' : 'border-white/10'}`}
+            <div className="mt-3 grid grid-cols-1 xl:grid-cols-4 gap-3">
+                <div
+                    className={`xl:col-span-1 bg-surface p-3 rounded-lg border-2 h-fit transition-colors ${dragOverTarget === 'unassigned' ? 'border-primary-500' : 'border-white/10'}`}
                     onDragOver={(e) => handleDragOver(e, 'unassigned')}
                     onDragLeave={handleDragLeave}
                     onDrop={(e) => handleDrop(e, 'unassigned')}
                 >
-                    <h3 className="text-lg font-semibold mb-3">Unassigned Streams ({unassignedStreams.length})</h3>
-                    <div className="space-y-2 max-h-96 overflow-y-auto pr-2">
-                        {unassignedStreams.map(s => (
-                            <div key={s.id}
-                                draggable
-                                onDragStart={(e) => handleDragStart(e, s)}
-                                className={`w-full text-left p-2 rounded-md border text-xs cursor-grab bg-background border-transparent ${draggedStream?.id === s.id ? 'opacity-50' : ''}`}>
-                                <p className="font-bold truncate">{s.name}</p>
-                                <p className="text-on-surface-variant/80 font-mono">T: {s.throughput.toFixed(1)} MP/s, S: {s.storage.toFixed(1)} GB</p>
-                            </div>
-                        ))}
+                    <h3 className="text-base font-semibold mb-2">Unassigned Streams ({unassignedStreams.length})</h3>
+                    <div className="space-y-1.5 max-h-80 overflow-y-auto pr-1">
+                        {unassignedStreams.map(s => {
+                            const availableGateways = getAvailableGateways(s);
+                            return (
+                                <div key={s.id}
+                                    draggable
+                                    onDragStart={(e) => handleDragStart(e, s)}
+                                    className={`w-full text-left p-1.5 rounded-md border text-xs cursor-grab bg-background border-transparent ${draggedStream?.id === s.id ? 'opacity-50' : ''} relative`}>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-bold truncate text-xs">{s.name}</p>
+                                            <p className="text-on-surface-variant/80 font-mono text-xs">T: {s.throughput.toFixed(1)} MP/s, S: {s.storage.toFixed(1)} GB</p>
+                                        </div>
+                                        {availableGateways.length > 0 && (
+                                            <div className="relative dropdown-container">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setOpenDropdown(openDropdown === s.id ? null : s.id);
+                                                    }}
+                                                    className="p-0.5 hover:bg-white/10 rounded"
+                                                    title="Assign to gateway"
+                                                >
+                                                    <ChevronDownIcon className="w-3.5 h-3.5" />
+                                                </button>
+                                                {openDropdown === s.id && (
+                                                    <div className="absolute right-0 top-full mt-0.5 w-44 bg-surface border border-white/20 rounded-md shadow-lg z-50 dropdown-container">
+                                                        <div className="py-0.5">
+                                                            {availableGateways.map(gateway => (
+                                                                <button
+                                                                    key={gateway.id}
+                                                                    onClick={() => {
+                                                                        handleAssignToGateway(s, gateway.id);
+                                                                        setOpenDropdown(null);
+                                                                    }}
+                                                                    className="w-full px-2.5 py-1.5 text-left text-xs hover:bg-white/10 flex items-center gap-2"
+                                                                >
+                                                                    <VideoGatewayIcon className="w-3.5 h-3.5 text-primary-400" />
+                                                                    <span>Gateway #{gateway.id} ({gateway.type})</span>
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
-                 <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <div className="xl:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     {gateways.map(gw => {
                         const spec = GATEWAY_SPECS[gw.type];
                         const usage = gw.assignedStreams.reduce((acc, s) => ({
@@ -616,28 +710,28 @@ const GatewayCalculator: React.FC<GatewayCalculatorProps> = ({ project, onFinish
                         }), { streams: 0, throughput: 0, storage: 0 });
                         
                         return (
-                            <div 
-                                key={gw.id} 
-                                className={`bg-surface p-4 rounded-lg border-2 transition-colors ${dragOverTarget === gw.id ? 'border-primary-500' : 'border-white/10'}`}
+                            <div
+                                key={gw.id}
+                                className={`bg-surface p-3 rounded-lg border-2 transition-colors ${dragOverTarget === gw.id ? 'border-primary-500' : 'border-white/10'}`}
                                 onDragOver={(e) => handleDragOver(e, gw.id)}
                                 onDragLeave={handleDragLeave}
                                 onDrop={(e) => handleDrop(e, gw.id)}
                             >
-                                <h3 className="text-lg font-semibold flex items-center gap-2"><VideoGatewayIcon className="w-5 h-5 text-primary-400" />Gateway #{gw.id} ({gw.type})</h3>
-                                <div className="mt-3 space-y-2 text-xs">
+                                <h3 className="text-base font-semibold flex items-center gap-2"><VideoGatewayIcon className="w-4 h-4 text-primary-400" />Gateway #{gw.id} ({gw.type})</h3>
+                                <div className="mt-2 space-y-1.5 text-xs">
                                     {renderProgressBar((usage.streams / spec.maxStreams) * 100, `Streams: ${usage.streams}/${spec.maxStreams}`)}
                                     {renderProgressBar((usage.throughput / spec.maxThroughput) * 100, `Throughput: ${usage.throughput.toFixed(1)}/${spec.maxThroughput} MP/s`)}
                                     {renderProgressBar((usage.storage / spec.maxStorage) * 100, `Storage: ${usage.storage.toFixed(1)}/${spec.maxStorage} GB`)}
                                 </div>
-                                <div className="mt-4 space-y-1 min-h-[50px]">
+                                <div className="mt-3 space-y-1 min-h-[40px]">
                                     {gw.assignedStreams.map(s => (
                                         <div key={s.id}
                                             draggable
                                             onDragStart={(e) => handleDragStart(e, s)}
-                                            className="bg-background p-1.5 rounded-md flex items-center justify-between text-xs cursor-grab">
+                                            className="bg-background p-1 rounded-md flex items-center justify-between text-xs cursor-grab">
                                             <div className="truncate">
-                                                <p className="font-bold truncate">{s.name}</p>
-                                                <p className="text-on-surface-variant/80 font-mono">T: {s.throughput.toFixed(1)}, S: {s.storage.toFixed(1)}</p>
+                                                <p className="font-bold truncate text-xs">{s.name}</p>
+                                                <p className="text-on-surface-variant/80 font-mono text-xs">T: {s.throughput.toFixed(1)}, S: {s.storage.toFixed(1)}</p>
                                             </div>
                                         </div>
                                     ))}
