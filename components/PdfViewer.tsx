@@ -98,10 +98,114 @@ const SelectionBox: React.FC<{ edit: AnyEdit; zoom: number; onMouseDown: (e: Mou
             <rect x={edit.x} y={edit.y} width={edit.width} height={edit.height} fill="none" stroke="#007bff" strokeWidth={strokeWidth} strokeDasharray={`${4/zoom} ${2/zoom}`} />
             {isSingleSelection && (
                 <>
-                    <rect onMouseDown={e => onMouseDown(e, edit, 'resize-tl')} className="cursor-nwse-resize" x={edit.x - handleSize/2} y={edit.y - handleSize/2} width={handleSize} height={handleSize} fill="white" stroke="#007bff" strokeWidth={0.5/zoom} />
-                    <rect onMouseDown={e => onMouseDown(e, edit, 'resize-tr')} className="cursor-nesw-resize" x={edit.x + edit.width - handleSize/2} y={edit.y - handleSize/2} width={handleSize} height={handleSize} fill="white" stroke="#007bff" strokeWidth={0.5/zoom} />
-                    <rect onMouseDown={e => onMouseDown(e, edit, 'resize-bl')} className="cursor-nesw-resize" x={edit.x - handleSize/2} y={edit.y + edit.height - handleSize/2} width={handleSize} height={handleSize} fill="white" stroke="#007bff" strokeWidth={0.5/zoom} />
-                    <rect onMouseDown={e => onMouseDown(e, edit, 'resize-br')} className="cursor-nwse-resize" x={edit.x + edit.width - handleSize/2} y={edit.y + edit.height - handleSize/2} width={handleSize} height={handleSize} fill="white" stroke="#007bff" strokeWidth={0.5/zoom} />
+                    <rect 
+                        onMouseDown={e => onMouseDown(e, edit, 'resize-tl')} 
+                        onTouchStart={e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (e.touches.length === 1) {
+                                const touch = e.touches[0];
+                                const mouseEvent = {
+                                    ...e,
+                                    clientX: touch.clientX,
+                                    clientY: touch.clientY,
+                                    button: 0,
+                                    preventDefault: () => e.preventDefault(),
+                                    stopPropagation: () => e.stopPropagation()
+                                } as MouseEvent<SVGElement>;
+                                onMouseDown(mouseEvent, edit, 'resize-tl');
+                            }
+                        }}
+                        className="cursor-nwse-resize" 
+                        x={edit.x - handleSize/2} 
+                        y={edit.y - handleSize/2} 
+                        width={handleSize} 
+                        height={handleSize} 
+                        fill="white" 
+                        stroke="#007bff" 
+                        strokeWidth={0.5/zoom} 
+                    />
+                    <rect 
+                        onMouseDown={e => onMouseDown(e, edit, 'resize-tr')} 
+                        onTouchStart={e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (e.touches.length === 1) {
+                                const touch = e.touches[0];
+                                const mouseEvent = {
+                                    ...e,
+                                    clientX: touch.clientX,
+                                    clientY: touch.clientY,
+                                    button: 0,
+                                    preventDefault: () => e.preventDefault(),
+                                    stopPropagation: () => e.stopPropagation()
+                                } as MouseEvent<SVGElement>;
+                                onMouseDown(mouseEvent, edit, 'resize-tr');
+                            }
+                        }}
+                        className="cursor-nesw-resize" 
+                        x={edit.x + edit.width - handleSize/2} 
+                        y={edit.y - handleSize/2} 
+                        width={handleSize} 
+                        height={handleSize} 
+                        fill="white" 
+                        stroke="#007bff" 
+                        strokeWidth={0.5/zoom} 
+                    />
+                    <rect 
+                        onMouseDown={e => onMouseDown(e, edit, 'resize-bl')} 
+                        onTouchStart={e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (e.touches.length === 1) {
+                                const touch = e.touches[0];
+                                const mouseEvent = {
+                                    ...e,
+                                    clientX: touch.clientX,
+                                    clientY: touch.clientY,
+                                    button: 0,
+                                    preventDefault: () => e.preventDefault(),
+                                    stopPropagation: () => e.stopPropagation()
+                                } as MouseEvent<SVGElement>;
+                                onMouseDown(mouseEvent, edit, 'resize-bl');
+                            }
+                        }}
+                        className="cursor-nesw-resize" 
+                        x={edit.x - handleSize/2} 
+                        y={edit.y + edit.height - handleSize/2} 
+                        width={handleSize} 
+                        height={handleSize} 
+                        fill="white" 
+                        stroke="#007bff" 
+                        strokeWidth={0.5/zoom} 
+                    />
+                    <rect 
+                        onMouseDown={e => onMouseDown(e, edit, 'resize-br')} 
+                        onTouchStart={e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (e.touches.length === 1) {
+                                const touch = e.touches[0];
+                                const mouseEvent = {
+                                    ...e,
+                                    clientX: touch.clientX,
+                                    clientY: touch.clientY,
+                                    button: 0,
+                                    preventDefault: () => e.preventDefault(),
+                                    stopPropagation: () => e.stopPropagation()
+                                } as MouseEvent<SVGElement>;
+                                onMouseDown(mouseEvent, edit, 'resize-br');
+                            }
+                        }}
+                        className="cursor-nwse-resize" 
+                        x={edit.x + edit.width - handleSize/2} 
+                        y={edit.y + edit.height - handleSize/2} 
+                        width={handleSize} 
+                        height={handleSize} 
+                        fill="white" 
+                        stroke="#007bff" 
+                        strokeWidth={0.5/zoom} 
+                    />
                 </>
             )}
         </g>
@@ -272,6 +376,22 @@ const EditRenderer: React.FC<{
         onMouseDown: (e: MouseEvent<SVGElement>) => onMouseDown(e, edit, 'move'),
         onMouseEnter: (e: MouseEvent<SVGElement>) => onMouseEnter(e, edit),
         onMouseLeave: onMouseLeave,
+        onTouchStart: (e: React.TouchEvent<SVGElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.touches.length === 1) {
+                const touch = e.touches[0];
+                const mouseEvent = {
+                    ...e,
+                    clientX: touch.clientX,
+                    clientY: touch.clientY,
+                    button: 0,
+                    preventDefault: () => e.preventDefault(),
+                    stopPropagation: () => e.stopPropagation()
+                } as MouseEvent<SVGElement>;
+                onMouseDown(mouseEvent, edit, 'move');
+            }
+        },
         className: 'cursor-move',
     });
 
@@ -929,6 +1049,99 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
             }
         }
     }, [props.selectedTool, props.selectedEditIds, props.setSelectedEditIds, props.onOpenDeviceFormOnDoubleClick, props.onOpenMarkerFormOnDoubleClick, props.onStartEditingText]);
+
+    // Touch event handlers for mobile support
+    const handleTouchStart = useCallback((e: React.TouchEvent) => {
+        e.preventDefault();
+        if (e.touches.length === 1) {
+            // Single touch - convert to mouse event
+            const touch = e.touches[0];
+            const mouseEvent = {
+                ...e,
+                clientX: touch.clientX,
+                clientY: touch.clientY,
+                button: 0,
+                preventDefault: () => e.preventDefault(),
+                stopPropagation: () => e.stopPropagation()
+            } as React.MouseEvent;
+            handleMouseDown(mouseEvent);
+        } else if (e.touches.length === 2) {
+            // Two finger touch - prepare for pinch zoom
+            const touch1 = e.touches[0];
+            const touch2 = e.touches[1];
+            const distance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+            const centerX = (touch1.clientX + touch2.clientX) / 2;
+            const centerY = (touch1.clientY + touch2.clientY) / 2;
+            
+            setDragState({
+                type: 'pinch',
+                editId: 'pinch',
+                originalEdit: { x: pan.x, y: pan.y, distance, centerX, centerY } as any,
+                startX: centerX,
+                startY: centerY
+            });
+        }
+    }, [handleMouseDown, pan]);
+
+    const handleTouchMove = useCallback((e: React.TouchEvent) => {
+        e.preventDefault();
+        if (e.touches.length === 1 && dragState && dragState.type !== 'pinch') {
+            // Single touch move - convert to mouse event
+            const touch = e.touches[0];
+            const mouseEvent = {
+                ...e,
+                clientX: touch.clientX,
+                clientY: touch.clientY,
+                preventDefault: () => e.preventDefault(),
+                stopPropagation: () => e.stopPropagation()
+            } as React.MouseEvent;
+            handleMouseMove(mouseEvent);
+        } else if (e.touches.length === 2 && dragState?.type === 'pinch') {
+            // Two finger pinch zoom
+            const touch1 = e.touches[0];
+            const touch2 = e.touches[1];
+            const newDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+            const centerX = (touch1.clientX + touch2.clientX) / 2;
+            const centerY = (touch1.clientY + touch2.clientY) / 2;
+            
+            const originalDistance = dragState.originalEdit.distance;
+            const scale = newDistance / originalDistance;
+            const newZoom = Math.max(0.1, Math.min(5, zoom * scale));
+            
+            // Calculate new pan to keep the pinch center point in the same place
+            const zoomRatio = newZoom / zoom;
+            const newPanX = centerX - (centerX - pan.x) * zoomRatio;
+            const newPanY = centerY - (centerY - pan.y) * zoomRatio;
+            
+            updateViewport(newZoom, { x: newPanX, y: newPanY });
+            
+            // Update the drag state with new values
+            setDragState({
+                ...dragState,
+                originalEdit: { ...dragState.originalEdit, distance: newDistance, centerX, centerY }
+            });
+        }
+    }, [handleMouseMove, dragState, zoom, pan, updateViewport]);
+
+    const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+        e.preventDefault();
+        if (e.touches.length === 0) {
+            // All touches ended
+            if (dragState?.type === 'pinch') {
+                setDragState(null);
+            } else {
+                // Convert to mouse event
+                const mouseEvent = {
+                    ...e,
+                    clientX: 0,
+                    clientY: 0,
+                    preventDefault: () => e.preventDefault(),
+                    stopPropagation: () => e.stopPropagation()
+                } as React.MouseEvent;
+                handleMouseUp(mouseEvent);
+            }
+        }
+    }, [handleMouseUp, dragState]);
     
     useImperativeHandle(ref, () => ({
         zoomIn: () => handleWheel({ deltaY: -1, clientX: containerRef.current!.clientWidth/2, clientY: containerRef.current!.clientHeight/2, preventDefault: () => {} } as React.WheelEvent),
@@ -968,6 +1181,9 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onMouseLeave={props.onHideTooltip}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
         >
             <div style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, width: pageDim.width, height: pageDim.height, transformOrigin: 'top left' }}>
                 <canvas ref={canvasRef} className="bg-white shadow-lg absolute top-0 left-0" />
