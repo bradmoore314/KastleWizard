@@ -1068,19 +1068,46 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
             const touch = e.touches[0];
             const { x, y } = screenToPdfCoords(touch.clientX, touch.clientY);
             dragStartCoords.current = { x: touch.clientX, y: touch.clientY };
-            
+
+            // Check if touch is on a selected marker (for dragging)
+            const editsOnPage = props.edits.filter(edit => edit.pageIndex === currentPage - 1);
+            const touchedEdit = editsOnPage.find(edit => {
+                const editRect = { x: edit.x, y: edit.y, width: edit.width, height: edit.height };
+                return x >= editRect.x && x <= editRect.x + editRect.width &&
+                       y >= editRect.y && y <= editRect.y + editRect.height &&
+                       props.selectedEditIds.includes(edit.id);
+            });
+
+            if (touchedEdit) {
+                // Touch is on a selected marker - initiate marker dragging
+                const now = Date.now();
+                if (now - lastClickRef.current.time < 300 && lastClickRef.current.editId === touchedEdit.id) {
+                    // Double tap on marker - open edit form
+                    if (touchedEdit.type === 'device') props.onOpenDeviceFormOnDoubleClick(touchedEdit);
+                    if (touchedEdit.type === 'marker') props.onOpenMarkerFormOnDoubleClick(touchedEdit);
+                    if (touchedEdit.type === 'text') props.onStartEditingText(touchedEdit.id);
+
+                    lastClickRef.current = { time: 0, editId: null };
+                    return;
+                }
+                lastClickRef.current = { time: now, editId: touchedEdit.id };
+
+                setDragState({ type: 'move', editId: touchedEdit.id, originalEdit: touchedEdit, startX: touch.clientX, startY: touch.clientY });
+                return;
+            }
+
             // Handle touch start the same way as mouse down
             if (props.selectedTool === 'pan' && props.selectedEditIds.length === 0) {
                 setDragState({ type: 'move', editId: 'pan', originalEdit: {x:pan.x, y:pan.y} as any, startX: touch.clientX, startY: touch.clientY });
                 return;
             }
-            
+
             if (props.isDefiningAiArea) {
                 setIsSelecting(true);
                 setSelectionBox({ x, y, width: 0, height: 0 });
                 return;
             }
-            
+
             switch (props.selectedTool) {
                 case 'draw':
                 case 'rectangle':
@@ -1118,7 +1145,7 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
                 startY: centerY
             });
         }
-    }, [screenToPdfCoords, props.selectedTool, props.selectedEditIds, props.isDefiningAiArea, pan, currentPage]);
+    }, [screenToPdfCoords, props.selectedTool, props.selectedEditIds, props.isDefiningAiArea, props.edits, props.onOpenDeviceFormOnDoubleClick, props.onOpenMarkerFormOnDoubleClick, props.onStartEditingText, pan, currentPage]);
 
     const handleTouchMove = useCallback((e: React.TouchEvent) => {
         // Always prevent default for touch events on floorplan
