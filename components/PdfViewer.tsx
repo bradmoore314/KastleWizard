@@ -723,6 +723,11 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
     }, [isGridVisible, zoom, currentPage, pageDimensions, RENDER_SCALE]);
 
     const handleWheel = useCallback((e: React.WheelEvent) => {
+        // Disable zooming when items are selected
+        if (props.selectedEditIds.length > 0) {
+            return;
+        }
+
         e.preventDefault();
         const scaleFactor = 1.1;
         const newZoom = e.deltaY < 0 ? zoom * scaleFactor : zoom / scaleFactor;
@@ -732,7 +737,7 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
         const newPanX = mouseX - (mouseX - pan.x) * (newZoom / zoom);
         const newPanY = mouseY - (mouseY - pan.y) * (newZoom / zoom);
         updateViewport(newZoom, { x: newPanX, y: newPanY });
-    }, [zoom, pan, updateViewport]);
+    }, [zoom, pan, updateViewport, props.selectedEditIds]);
 
     const handleMouseDown = useCallback((e: React.MouseEvent) => {
         const { x, y } = screenToPdfCoords(e.clientX, e.clientY);
@@ -1096,6 +1101,7 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
             }
 
             // Handle touch start the same way as mouse down
+            // Disable panning when any items are selected
             if (props.selectedTool === 'pan' && props.selectedEditIds.length === 0) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -1133,18 +1139,24 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
                     setSelectionBox({ x, y, width: 0, height: 0 });
                     break;
                 case 'place-item':
-                    // For place-item, allow normal touch behavior (zooming/panning)
-                    // We'll handle placement in touch end
+                    // For place-item, allow normal touch behavior (zooming/panning) only when no items selected
+                    if (props.selectedEditIds.length === 0) {
+                        // Allow zooming/panning when no items selected
+                    } else {
+                        // Disable zooming/panning when items are selected
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
                     break;
             }
-        } else if (e.touches.length === 2) {
-            // Two finger touch - prepare for pinch zoom
+        } else if (e.touches.length === 2 && props.selectedEditIds.length === 0) {
+            // Two finger touch - prepare for pinch zoom (only when no items selected)
             const touch1 = e.touches[0];
             const touch2 = e.touches[1];
             const distance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
             const centerX = (touch1.clientX + touch2.clientX) / 2;
             const centerY = (touch1.clientY + touch2.clientY) / 2;
-            
+
             setDragState({
                 type: 'pinch',
                 editId: 'pinch',
