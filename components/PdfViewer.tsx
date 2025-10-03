@@ -733,7 +733,7 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
         const newZoom = e.deltaY < 0 ? zoom * scaleFactor : zoom / scaleFactor;
 
         // Ensure zoom stays within reasonable bounds
-        const clampedZoom = Math.max(0.1, Math.min(5, newZoom));
+        const clampedZoom = Math.max(0.25, Math.min(4, newZoom));
 
         const rect = containerRef.current!.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
@@ -1273,11 +1273,10 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
                         height: pageDim.height,
                         position: 'absolute',
                         top: 0,
-                        left: 0,
-                        imageRendering: 'crisp-edges'
+                        left: 0
                     }}
                 >
-                <canvas ref={canvasRef} className="bg-white shadow-lg absolute top-0 left-0" style={{ imageRendering: 'crisp-edges' }} />
+                <canvas ref={canvasRef} className="bg-white shadow-lg absolute top-0 left-0" />
                 <canvas ref={gridCanvasRef} className="absolute top-0 left-0 pointer-events-none" />
                 <svg
                     className="absolute top-0 left-0"
