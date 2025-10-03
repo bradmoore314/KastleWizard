@@ -6,12 +6,18 @@
     {
       "src": "/icon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ],
   "start_url": "/",
   "display": "standalone",
   "scope": "/",
   "theme_color": "#dc2626",
-  "background_color": "#030712"
+  "background_color": "#030712",
+  "orientation": "any",
+  "categories": ["productivity", "business", "utilities"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "prefer_related_applications": false
 }

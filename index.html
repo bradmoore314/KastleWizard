@@ -2,7 +2,7 @@
 <html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
     <title>Kastle Systems | Floor Plan Tool</title>
     
     <!-- PWA Manifest & Theme -->
@@ -38,6 +38,26 @@
         height: 100%;
         margin: 0;
         padding: 0;
+      }
+      
+      /* Mobile keyboard handling */
+      @media screen and (max-width: 768px) {
+        /* Prevent zoom on input focus */
+        input[type="text"], input[type="email"], input[type="tel"], input[type="number"], 
+        input[type="password"], input[type="search"], textarea, select {
+          font-size: 16px !important;
+        }
+        
+        /* Improve touch targets */
+        button, input, select, textarea {
+          min-height: 44px;
+          min-width: 44px;
+        }
+        
+        /* Better mobile scrolling */
+        * {
+          -webkit-overflow-scrolling: touch;
+        }
       }
     </style>
     

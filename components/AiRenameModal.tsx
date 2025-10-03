@@ -117,8 +117,8 @@ const AiRenameModal: React.FC<AiRenameModalProps> = ({ state, renames, error, on
     };
     
     return (
-        <div ref={modalRef} className="fixed inset-0 bg-black/70 z-[100] flex items-center justify-center p-4" onClick={onClose} role="dialog" aria-modal="true">
-            <div className="bg-surface rounded-xl shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+        <div ref={modalRef} className="fixed inset-0 bg-black/70 z-[100] flex items-end sm:items-center justify-center p-4" onClick={onClose} role="dialog" aria-modal="true">
+            <div className="bg-surface rounded-t-xl sm:rounded-xl shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
                 <header className="p-4 border-b border-white/10 flex justify-between items-center">
                     <h2 className="text-xl font-bold text-on-surface flex items-center gap-2"><AiRenameIcon className="w-6 h-6 text-teal-400" /> AI Rename Equipment</h2>
                     <button onClick={onClose} className="p-1 rounded-full hover:bg-white/10"><CloseIcon className="w-6 h-6" /></button>

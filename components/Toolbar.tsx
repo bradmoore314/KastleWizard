@@ -112,8 +112,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
   const isSecondaryToolSelected = secondaryTools.some(tool => tool.name === selectedTool);
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-1/2 md:-translate-x-1/2 md:w-auto md:right-auto p-1.5 bg-surface/80 backdrop-blur-md rounded-xl border border-white/10 flex flex-row items-center gap-1 shadow-2xl z-50 overflow-x-auto">
-      <div className="flex flex-row items-center gap-1 whitespace-nowrap">
+    <div className="fixed bottom-4 left-2 right-2 md:left-1/2 md:-translate-x-1/2 md:w-auto md:right-auto p-2 md:p-1.5 bg-surface/90 backdrop-blur-md rounded-xl border border-white/10 flex flex-row items-center gap-2 md:gap-1 shadow-2xl z-50 overflow-x-auto">
+      <div className="flex flex-row items-center gap-2 md:gap-1 whitespace-nowrap">
         <TooltipWrapper title="Undo (Ctrl+Z)">
             <button onClick={onUndo} disabled={!canUndo} className="p-3 rounded-lg hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 <UndoIcon className="w-5 h-5" />
@@ -133,7 +133,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         </div>
 
         {/* --- MOBILE TOOLS --- */}
-        <div className="flex md:hidden flex-row items-center gap-1">
+        <div className="flex md:hidden flex-row items-center gap-2">
             {primaryTools.map(({ name, icon: Icon, title }) => renderToolButton(name, Icon, title))}
             
             <div className="relative" ref={moreToolsRef}>

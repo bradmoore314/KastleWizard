@@ -53,7 +53,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ onClose, onSelectItem }) =>
 
     return (
         <div
-            className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center"
+            className="fixed inset-0 bg-black/80 z-[100] flex items-end sm:items-center justify-center"
             onClick={onClose}
         >
             <div

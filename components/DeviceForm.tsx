@@ -425,16 +425,22 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ devices, onClose, isCreating, o
             );
             break;
         case 'textarea':
-             inputElement = <textarea id={key} name={key} value={hasValue ? value : ''} onChange={(e) => handleChange(key, e.target.value)} rows={3} className="w-full bg-background border border-white/20 rounded-md p-2 text-on-surface focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-base" placeholder={placeholder}/>;
-             break;
+            inputElement = <textarea id={key} name={key} value={hasValue ? value : ''} onChange={(e) => handleChange(key, e.target.value)} rows={3} className="w-full bg-background border border-white/20 rounded-md p-3 md:p-2 text-on-surface focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-base min-h-[44px] md:min-h-0 resize-none" placeholder={placeholder}/>;
+            break;
         case 'password':
             inputElement = <input type="password" id={key} name={key} value={hasValue ? value : ''} onChange={(e) => handleChange(key, e.target.value)} className="w-full bg-background border border-white/20 rounded-md p-2 text-on-surface focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-base" placeholder={placeholder}/>;
             break;
         case 'number':
-            inputElement = <input type="number" id={key} name={key} value={hasValue ? value : ''} onChange={(e) => handleChange(key, e.target.value)} className="w-full bg-background border border-white/20 rounded-md p-2 text-on-surface focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-base" placeholder={placeholder}/>;
+            inputElement = <input type="number" id={key} name={key} value={hasValue ? value : ''} onChange={(e) => handleChange(key, e.target.value)} className="w-full bg-background border border-white/20 rounded-md p-3 md:p-2 text-on-surface focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-base min-h-[44px] md:min-h-0" placeholder={placeholder} inputMode="numeric" pattern="[0-9]*"/>;
+            break;
+        case 'tel':
+            inputElement = <input type="tel" id={key} name={key} value={hasValue ? value : ''} onChange={(e) => handleChange(key, e.target.value)} className="w-full bg-background border border-white/20 rounded-md p-3 md:p-2 text-on-surface focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-base min-h-[44px] md:min-h-0" placeholder={placeholder} inputMode="tel"/>;
+            break;
+        case 'email':
+            inputElement = <input type="email" id={key} name={key} value={hasValue ? value : ''} onChange={(e) => handleChange(key, e.target.value)} className="w-full bg-background border border-white/20 rounded-md p-3 md:p-2 text-on-surface focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-base min-h-[44px] md:min-h-0" placeholder={placeholder} inputMode="email" autoComplete="email"/>;
             break;
         default:
-            inputElement = <input type='text' id={key} name={key} value={hasValue ? value : ''} onChange={(e) => handleChange(key, e.target.value)} className="w-full bg-background border border-white/20 rounded-md p-2 text-on-surface focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-base" placeholder={placeholder}/>;
+            inputElement = <input type='text' id={key} name={key} value={hasValue ? value : ''} onChange={(e) => handleChange(key, e.target.value)} className="w-full bg-background border border-white/20 rounded-md p-3 md:p-2 text-on-surface focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition text-base min-h-[44px] md:min-h-0" placeholder={placeholder}/>;
             break;
     }
 
