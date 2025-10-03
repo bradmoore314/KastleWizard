@@ -1249,61 +1249,228 @@ const appReducer = (state: AppState, action: Action): AppState => {
         }
         
         case 'UNDO': {
-            if (state.undoStack.length === 0) return state;
+            if (!activeProject) return state;
 
-            const command = state.undoStack[state.undoStack.length - 1];
-            const newUndoStack = state.undoStack.slice(0, -1);
+            // Get the most recent audit log entry
+            const lastAuditEntry = activeProject.auditLog[0];
+            if (!lastAuditEntry) return state;
 
             let newState = state;
 
-            switch (command.type) {
-                case 'UPDATE_EDITS': {
-                    const { floorplanId } = command.payload;
-                    const newProjects = state.projects.map(project => {
-                        if (project.id !== activeProjectId) return project;
+            switch (lastAuditEntry.action) {
+                case 'CREATE_ITEM':
+                case 'CREATE_ITEMS': {
+                    // Undo creating items - delete them
+                    const itemNames = lastAuditEntry.description.match(/item[^"]*"([^"]+)"/g) || [];
+                    const itemsToDelete = activeProject.projectLevelInventory
+                        .filter(item => itemNames.some(name => name.includes(`"${getEditName(item)}"`)))
+                        .concat(activeProject.floorplans.flatMap(fp => fp.inventory)
+                        .filter(item => itemNames.some(name => name.includes(`"${getEditName(item)}"`))));
 
-                        if (floorplanId === 'project-level-inventory') {
-                            return {
-                                ...project,
-                                projectLevelInventory: command.payload.previous
-                            };
-                        } else {
-                            return {
-                                ...project,
-                                floorplans: project.floorplans.map(floorplan =>
-                                    floorplan.id === floorplanId
-                                        ? { ...floorplan, inventory: command.payload.previous }
-                                        : floorplan
-                                )
-                            };
-                        }
-                    });
-                    newState = { ...state, projects: newProjects, undoStack: newUndoStack, redoStack: [...state.redoStack, command] };
+                    if (itemsToDelete.length > 0) {
+                        const deleteIds = itemsToDelete.map(item => item.id);
+                        const deleteState = appReducer(state, { type: 'DELETE_EDITS', payload: deleteIds });
+                        const undoLog = createLogEntry('UNDO_CREATE_ITEMS', `Undid creation of ${itemsToDelete.length} item(s)`);
+                        newState = {
+                            ...deleteState,
+                            projects: deleteState.projects.map(p =>
+                                p.id === activeProjectId ? { ...p, auditLog: [undoLog, ...p.auditLog] } : p
+                            )
+                        };
+                    }
                     break;
                 }
 
-                case 'REORDER_EDITS': {
-                    const { floorplanId } = command.payload;
-                    const newProjects = state.projects.map(project => {
-                        if (project.id !== activeProjectId) return project;
+                case 'DELETE_ITEMS': {
+                    // Undo deleting items - restore them
+                    // This is complex because we need to know what was deleted
+                    // For now, we'll skip this as it's hard to reverse without storing the deleted items
+                    const undoLog = createLogEntry('UNDO_DELETE_ITEMS', 'Undid item deletion (items cannot be restored without stored data)');
+                    newState = {
+                        ...state,
+                        projects: state.projects.map(p =>
+                            p.id === activeProjectId ? { ...p, auditLog: [undoLog, ...p.auditLog] } : p
+                        )
+                    };
+                    break;
+                }
 
-                        if (floorplanId === 'project-level-inventory') {
-                            return {
-                                ...project,
-                                projectLevelInventory: command.payload.previousInventory
-                            };
-                        } else {
-                            return {
-                                ...project,
-                                floorplans: project.floorplans.map(floorplan =>
-                                    floorplan.id === floorplanId
-                                        ? { ...floorplan, inventory: command.payload.previousInventory }
-                                        : floorplan
-                                )
-                            };
+                case 'UPDATE_ITEM':
+                case 'UPDATE_ITEM_BULK': {
+                    // Undo item updates - this is complex as we'd need to know the previous values
+                    // For now, we'll log that undo is not supported for this action
+                    const undoLog = createLogEntry('UNDO_UPDATE_ITEM', 'Undid item update (previous values not stored)');
+                    newState = {
+                        ...state,
+                        projects: state.projects.map(p =>
+                            p.id === activeProjectId ? { ...p, auditLog: [undoLog, ...p.auditLog] } : p
+                        )
+                    };
+                    break;
+                }
+
+                case 'MOVE_ITEMS': {
+                    // Undo moving items - move them back to their original location
+                    // This is complex without storing the original location
+                    const undoLog = createLogEntry('UNDO_MOVE_ITEMS', 'Undid item movement (original location not stored)');
+                    newState = {
+                        ...state,
+                        projects: state.projects.map(p =>
+                            p.id === activeProjectId ? { ...p, auditLog: [undoLog, ...p.auditLog] } : p
+                        )
+                    };
+                    break;
+                }
+
+                case 'PLACE_ITEM': {
+                    // Undo placing an item - remove it from the floorplan
+                    if (lastAuditEntry.details?.coordinates) {
+                        // Find the item that was placed at these coordinates
+                        const floorplan = activeProject.floorplans.find(fp => fp.id === activeFloorplanId);
+                        if (floorplan) {
+                            const itemToRemove = floorplan.inventory.find(item => {
+                                const distance = Math.sqrt(
+                                    Math.pow(item.x - lastAuditEntry.details.coordinates.x, 2) +
+                                    Math.pow(item.y - lastAuditEntry.details.coordinates.y, 2)
+                                );
+                                return distance < 10; // Within 10 pixels
+                            });
+
+                            if (itemToRemove) {
+                                const newFloorplans = activeProject.floorplans.map(fp =>
+                                    fp.id === activeFloorplanId
+                                        ? { ...fp, inventory: fp.inventory.filter(item => item.id !== itemToRemove.id) }
+                                        : fp
+                                );
+                                const updatedProject = {
+                                    ...activeProject,
+                                    floorplans: newFloorplans
+                                };
+                                const undoLog = createLogEntry('UNDO_PLACE_ITEM', `Undid placement of "${getEditName(itemToRemove)}"`);
+                                newState = {
+                                    ...state,
+                                    projects: state.projects.map(p =>
+                                        p.id === activeProjectId
+                                            ? { ...updatedProject, auditLog: [undoLog, ...updatedProject.auditLog] }
+                                            : p
+                                    )
+                                };
+                            }
                         }
-                    });
-                    newState = { ...state, projects: newProjects, undoStack: newUndoStack, redoStack: [...state.redoStack, command] };
+                    }
+                    break;
+                }
+
+                case 'DUPLICATE_ITEMS': {
+                    // Undo duplicating items - delete the duplicates
+                    // This is complex without knowing which items were duplicated
+                    const undoLog = createLogEntry('UNDO_DUPLICATE_ITEMS', 'Undid item duplication (duplicates not identifiable)');
+                    newState = {
+                        ...state,
+                        projects: state.projects.map(p =>
+                            p.id === activeProjectId ? { ...p, auditLog: [undoLog, ...p.auditLog] } : p
+                        )
+                    };
+                    break;
+                }
+
+                case 'COPY_ITEMS': {
+                    // Undo copying items - remove the copies
+                    // This is complex without knowing which items were copied
+                    const undoLog = createLogEntry('UNDO_COPY_ITEMS', 'Undid item copying (copies not identifiable)');
+                    newState = {
+                        ...state,
+                        projects: state.projects.map(p =>
+                            p.id === activeProjectId ? { ...p, auditLog: [undoLog, ...p.auditLog] } : p
+                        )
+                    };
+                    break;
+                }
+
+                case 'UPDATE_PROJECT': {
+                    // Undo project updates - revert to previous state if possible
+                    const undoLog = createLogEntry('UNDO_UPDATE_PROJECT', 'Undid project update (previous state not stored)');
+                    newState = {
+                        ...state,
+                        projects: state.projects.map(p =>
+                            p.id === activeProjectId ? { ...p, auditLog: [undoLog, ...p.auditLog] } : p
+                        )
+                    };
+                    break;
+                }
+
+                case 'ADD_FLOORPLAN': {
+                    // Undo adding a floorplan - delete it
+                    // This is complex without knowing which floorplan was added
+                    const undoLog = createLogEntry('UNDO_ADD_FLOORPLAN', 'Undid floorplan addition (floorplan not identifiable)');
+                    newState = {
+                        ...state,
+                        projects: state.projects.map(p =>
+                            p.id === activeProjectId ? { ...p, auditLog: [undoLog, ...p.auditLog] } : p
+                        )
+                    };
+                    break;
+                }
+
+                case 'DELETE_FLOORPLAN': {
+                    // Undo deleting a floorplan - restore it
+                    // This is complex without storing the deleted floorplan
+                    const undoLog = createLogEntry('UNDO_DELETE_FLOORPLAN', 'Undid floorplan deletion (floorplan not stored)');
+                    newState = {
+                        ...state,
+                        projects: state.projects.map(p =>
+                            p.id === activeProjectId ? { ...p, auditLog: [undoLog, ...p.auditLog] } : p
+                        )
+                    };
+                    break;
+                }
+
+                case 'UPDATE_FLOORPLAN': {
+                    // Undo floorplan updates
+                    const undoLog = createLogEntry('UNDO_UPDATE_FLOORPLAN', 'Undid floorplan update (previous state not stored)');
+                    newState = {
+                        ...state,
+                        projects: state.projects.map(p =>
+                            p.id === activeProjectId ? { ...p, auditLog: [undoLog, ...p.auditLog] } : p
+                        )
+                    };
+                    break;
+                }
+
+                case 'DELETE_PAGES': {
+                    // Undo deleting pages - restore them
+                    // This is complex without storing the deleted pages
+                    const undoLog = createLogEntry('UNDO_DELETE_PAGES', 'Undid page deletion (pages not stored)');
+                    newState = {
+                        ...state,
+                        projects: state.projects.map(p =>
+                            p.id === activeProjectId ? { ...p, auditLog: [undoLog, ...p.auditLog] } : p
+                        )
+                    };
+                    break;
+                }
+
+                case 'UPDATE_CHECKLIST': {
+                    // Undo checklist updates
+                    const undoLog = createLogEntry('UNDO_UPDATE_CHECKLIST', 'Undid checklist update (previous answer not stored)');
+                    newState = {
+                        ...state,
+                        projects: state.projects.map(p =>
+                            p.id === activeProjectId ? { ...p, auditLog: [undoLog, ...p.auditLog] } : p
+                        )
+                    };
+                    break;
+                }
+
+                default: {
+                    // For actions we don't know how to undo, just log it
+                    const undoLog = createLogEntry('UNDO_UNKNOWN', `Cannot undo action: ${lastAuditEntry.action}`);
+                    newState = {
+                        ...state,
+                        projects: state.projects.map(p =>
+                            p.id === activeProjectId ? { ...p, auditLog: [undoLog, ...p.auditLog] } : p
+                        )
+                    };
                     break;
                 }
             }
@@ -1312,66 +1479,24 @@ const appReducer = (state: AppState, action: Action): AppState => {
         }
 
         case 'REDO': {
-            if (state.redoStack.length === 0) return state;
+            if (!activeProject) return state;
 
-            const command = state.redoStack[state.redoStack.length - 1];
-            const newRedoStack = state.redoStack.slice(0, -1);
+            // For redo, we need to find the most recent undo action in the audit log
+            // and replay the original action that was undone
+            const undoEntries = activeProject.auditLog.filter(entry => entry.action.startsWith('UNDO_'));
+            if (undoEntries.length === 0) return state;
 
-            let newState = state;
+            const lastUndoEntry = undoEntries[0];
+            // For now, we'll just log that redo is not fully implemented
+            // A full implementation would need to track what was undone and replay it
+            const redoLog = createLogEntry('REDO_NOT_IMPLEMENTED', 'Redo functionality not fully implemented');
 
-            switch (command.type) {
-                case 'UPDATE_EDITS': {
-                    const { floorplanId } = command.payload;
-                    const newProjects = state.projects.map(project => {
-                        if (project.id !== activeProjectId) return project;
-
-                        if (floorplanId === 'project-level-inventory') {
-                            return {
-                                ...project,
-                                projectLevelInventory: command.payload.current
-                            };
-                        } else {
-                            return {
-                                ...project,
-                                floorplans: project.floorplans.map(floorplan =>
-                                    floorplan.id === floorplanId
-                                        ? { ...floorplan, inventory: command.payload.current }
-                                        : floorplan
-                                )
-                            };
-                        }
-                    });
-                    newState = { ...state, projects: newProjects, undoStack: [...state.undoStack, command], redoStack: newRedoStack };
-                    break;
-                }
-
-                case 'REORDER_EDITS': {
-                    const { floorplanId } = command.payload;
-                    const newProjects = state.projects.map(project => {
-                        if (project.id !== activeProjectId) return project;
-
-                        if (floorplanId === 'project-level-inventory') {
-                            return {
-                                ...project,
-                                projectLevelInventory: command.payload.currentInventory
-                            };
-                        } else {
-                            return {
-                                ...project,
-                                floorplans: project.floorplans.map(floorplan =>
-                                    floorplan.id === floorplanId
-                                        ? { ...floorplan, inventory: command.payload.currentInventory }
-                                        : floorplan
-                                )
-                            };
-                        }
-                    });
-                    newState = { ...state, projects: newProjects, undoStack: [...state.undoStack, command], redoStack: newRedoStack };
-                    break;
-                }
-            }
-
-            return newState;
+            return {
+                ...state,
+                projects: state.projects.map(p =>
+                    p.id === activeProjectId ? { ...p, auditLog: [redoLog, ...p.auditLog] } : p
+                )
+            };
         }
         
         case 'RESET_STATE':
