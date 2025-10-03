@@ -1059,10 +1059,7 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
 
     // Touch event handlers for mobile support
     const handleTouchStart = useCallback((e: React.TouchEvent) => {
-        // Always prevent default for touch events on floorplan to avoid page interactions
-        e.preventDefault();
-        e.stopPropagation();
-        
+        // Only prevent default for specific interactions that need it
         if (e.touches.length === 1) {
             // Single touch - use the same coordinate conversion as mouse events
             const touch = e.touches[0];
@@ -1080,6 +1077,8 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
 
             if (touchedEdit) {
                 // Touch is on a selected marker - initiate marker dragging
+                e.preventDefault();
+                e.stopPropagation();
                 const now = Date.now();
                 if (now - lastClickRef.current.time < 300 && lastClickRef.current.editId === touchedEdit.id) {
                     // Double tap on marker - open edit form
@@ -1098,11 +1097,15 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
 
             // Handle touch start the same way as mouse down
             if (props.selectedTool === 'pan' && props.selectedEditIds.length === 0) {
+                e.preventDefault();
+                e.stopPropagation();
                 setDragState({ type: 'move', editId: 'pan', originalEdit: {x:pan.x, y:pan.y} as any, startX: touch.clientX, startY: touch.clientY });
                 return;
             }
 
             if (props.isDefiningAiArea) {
+                e.preventDefault();
+                e.stopPropagation();
                 setIsSelecting(true);
                 setSelectionBox({ x, y, width: 0, height: 0 });
                 return;
@@ -1112,6 +1115,8 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
                 case 'draw':
                 case 'rectangle':
                 case 'conduit': {
+                    e.preventDefault();
+                    e.stopPropagation();
                     const type = props.selectedTool;
                     setCurrentDrawing({
                         id: crypto.randomUUID(), type, path: `M ${x} ${y}`, x, y, width: 0, height: 0,
@@ -1122,11 +1127,14 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
                     break;
                 }
                 case 'select':
+                    e.preventDefault();
+                    e.stopPropagation();
                     setIsSelecting(true);
                     setSelectionBox({ x, y, width: 0, height: 0 });
                     break;
                 case 'place-item':
-                    // For place-item, we'll handle it in touch end
+                    // For place-item, allow normal touch behavior (zooming/panning)
+                    // We'll handle placement in touch end
                     break;
             }
         } else if (e.touches.length === 2) {
@@ -1148,10 +1156,12 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
     }, [screenToPdfCoords, props.selectedTool, props.selectedEditIds, props.isDefiningAiArea, props.edits, props.onOpenDeviceFormOnDoubleClick, props.onOpenMarkerFormOnDoubleClick, props.onStartEditingText, pan, currentPage]);
 
     const handleTouchMove = useCallback((e: React.TouchEvent) => {
-        // Always prevent default for touch events on floorplan
-        e.preventDefault();
-        e.stopPropagation();
-        
+        // Only prevent default when we're actively dragging or drawing
+        if (dragState || currentDrawing || isSelecting) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
         if (e.touches.length === 1 && dragState && dragState.type !== 'pinch') {
             // Single touch move - convert to mouse event
             const touch = e.touches[0];
@@ -1188,12 +1198,14 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
                 originalEdit: { ...dragState.originalEdit, distance: newDistance, centerX, centerY }
             });
         }
-    }, [handleMouseMove, dragState, zoom, pan, updateViewport]);
+    }, [handleMouseMove, dragState, zoom, pan, updateViewport, currentDrawing, isSelecting]);
 
     const handleTouchEnd = useCallback((e: React.TouchEvent) => {
-        // Always prevent default for touch events on floorplan
-        e.preventDefault();
-        e.stopPropagation();
+        // Only prevent default when we're ending a drag or drawing operation
+        if (dragState || currentDrawing || isSelecting) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
         
         if (e.touches.length === 0) {
             // All touches ended
@@ -1220,7 +1232,7 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
                 }
             }
         }
-    }, [handleMouseUp, dragState, props.selectedTool, props.onPlaceItem, screenToPdfCoords]);
+    }, [handleMouseUp, dragState, props.selectedTool, props.onPlaceItem, screenToPdfCoords, currentDrawing, isSelecting]);
     
     useImperativeHandle(ref, () => ({
         zoomIn: () => handleWheel({ deltaY: -1, clientX: containerRef.current!.clientWidth/2, clientY: containerRef.current!.clientHeight/2, preventDefault: () => {} } as React.WheelEvent),
