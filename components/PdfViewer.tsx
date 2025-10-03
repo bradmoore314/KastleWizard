@@ -1248,7 +1248,7 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
     const textEditToRender = editingText ? props.edits.find(e => e.id === editingText.id) as TextEdit : null;
 
     return (
-        <div 
+        <div
             ref={containerRef}
             className="w-full h-full bg-gray-600 overflow-hidden relative floorplan-canvas"
             style={{ cursor: props.selectedTool === 'pan' ? 'grab' : (dragState?.editId === 'pan' ? 'grabbing' : (props.selectedTool === 'select' ? 'default' : 'crosshair')) }}
@@ -1261,14 +1261,29 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
         >
-            <div style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`, width: pageDim.width, height: pageDim.height, transformOrigin: 'top left' }}>
-                <canvas ref={canvasRef} className="bg-white shadow-lg absolute top-0 left-0" />
+            <div
+                style={{
+                    transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+                    transformOrigin: 'top left',
+                    width: pageDim.width,
+                    height: pageDim.height,
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    willChange: 'transform',
+                    pointerEvents: 'none',
+                    contain: 'layout style paint'
+                }}
+            >
+                <canvas ref={canvasRef} className="bg-white shadow-lg absolute top-0 left-0" style={{ pointerEvents: 'auto' }} />
                 <canvas ref={gridCanvasRef} className="absolute top-0 left-0 pointer-events-none" />
                 <svg
                     className="absolute top-0 left-0"
                     width={pageDim.width}
                     height={pageDim.height}
-                    style={{ pointerEvents: currentDrawing || dragState || isSelecting || editingText ? 'none' : 'auto' }}
+                    style={{
+                        pointerEvents: currentDrawing || dragState || isSelecting || editingText ? 'none' : 'auto'
+                    }}
                 >
                     {editsToRender.filter(e => e.pageIndex === currentPage - 1).map(edit => (
                         <EditRenderer 

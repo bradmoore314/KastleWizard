@@ -1249,13 +1249,129 @@ const appReducer = (state: AppState, action: Action): AppState => {
         }
         
         case 'UNDO': {
-            // ... undo logic (not shown, but would apply inverse of command)
-            return state;
+            if (state.undoStack.length === 0) return state;
+
+            const command = state.undoStack[state.undoStack.length - 1];
+            const newUndoStack = state.undoStack.slice(0, -1);
+
+            let newState = state;
+
+            switch (command.type) {
+                case 'UPDATE_EDITS': {
+                    const { floorplanId } = command.payload;
+                    const newProjects = state.projects.map(project => {
+                        if (project.id !== activeProjectId) return project;
+
+                        if (floorplanId === 'project-level-inventory') {
+                            return {
+                                ...project,
+                                projectLevelInventory: command.payload.previous
+                            };
+                        } else {
+                            return {
+                                ...project,
+                                floorplans: project.floorplans.map(floorplan =>
+                                    floorplan.id === floorplanId
+                                        ? { ...floorplan, inventory: command.payload.previous }
+                                        : floorplan
+                                )
+                            };
+                        }
+                    });
+                    newState = { ...state, projects: newProjects, undoStack: newUndoStack, redoStack: [...state.redoStack, command] };
+                    break;
+                }
+
+                case 'REORDER_EDITS': {
+                    const { floorplanId } = command.payload;
+                    const newProjects = state.projects.map(project => {
+                        if (project.id !== activeProjectId) return project;
+
+                        if (floorplanId === 'project-level-inventory') {
+                            return {
+                                ...project,
+                                projectLevelInventory: command.payload.previousInventory
+                            };
+                        } else {
+                            return {
+                                ...project,
+                                floorplans: project.floorplans.map(floorplan =>
+                                    floorplan.id === floorplanId
+                                        ? { ...floorplan, inventory: command.payload.previousInventory }
+                                        : floorplan
+                                )
+                            };
+                        }
+                    });
+                    newState = { ...state, projects: newProjects, undoStack: newUndoStack, redoStack: [...state.redoStack, command] };
+                    break;
+                }
+            }
+
+            return newState;
         }
 
         case 'REDO': {
-            // ... redo logic (not shown, but would re-apply command)
-            return state;
+            if (state.redoStack.length === 0) return state;
+
+            const command = state.redoStack[state.redoStack.length - 1];
+            const newRedoStack = state.redoStack.slice(0, -1);
+
+            let newState = state;
+
+            switch (command.type) {
+                case 'UPDATE_EDITS': {
+                    const { floorplanId } = command.payload;
+                    const newProjects = state.projects.map(project => {
+                        if (project.id !== activeProjectId) return project;
+
+                        if (floorplanId === 'project-level-inventory') {
+                            return {
+                                ...project,
+                                projectLevelInventory: command.payload.current
+                            };
+                        } else {
+                            return {
+                                ...project,
+                                floorplans: project.floorplans.map(floorplan =>
+                                    floorplan.id === floorplanId
+                                        ? { ...floorplan, inventory: command.payload.current }
+                                        : floorplan
+                                )
+                            };
+                        }
+                    });
+                    newState = { ...state, projects: newProjects, undoStack: [...state.undoStack, command], redoStack: newRedoStack };
+                    break;
+                }
+
+                case 'REORDER_EDITS': {
+                    const { floorplanId } = command.payload;
+                    const newProjects = state.projects.map(project => {
+                        if (project.id !== activeProjectId) return project;
+
+                        if (floorplanId === 'project-level-inventory') {
+                            return {
+                                ...project,
+                                projectLevelInventory: command.payload.currentInventory
+                            };
+                        } else {
+                            return {
+                                ...project,
+                                floorplans: project.floorplans.map(floorplan =>
+                                    floorplan.id === floorplanId
+                                        ? { ...floorplan, inventory: command.payload.currentInventory }
+                                        : floorplan
+                                )
+                            };
+                        }
+                    });
+                    newState = { ...state, projects: newProjects, undoStack: [...state.undoStack, command], redoStack: newRedoStack };
+                    break;
+                }
+            }
+
+            return newState;
         }
         
         case 'RESET_STATE':
