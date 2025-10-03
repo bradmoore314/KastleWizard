@@ -376,6 +376,10 @@ const App = () => {
   const [isDocumentationModalOpen, setIsDocumentationModalOpen] = useState(false);
   const [isWhatsNewModalOpen, setIsWhatsNewModalOpen] = useState(false);
   const [sharePointUrl, setSharePointUrl] = useState('');
+  
+  // AI Dropdown State
+  const [isAiDropdownOpen, setIsAiDropdownOpen] = useState(false);
+  const aiDropdownRef = useRef<HTMLDivElement>(null);
 
   const [isCameraCaptureOpen, setIsCameraCaptureOpen] = useState(false);
   const [autoBackupHandle, setAutoBackupHandle] = useState<FileSystemDirectoryHandle | null>(null);
@@ -609,6 +613,16 @@ const App = () => {
     }
   }, [activeProjectId, dispatch]);
 
+  // AI Dropdown click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (aiDropdownRef.current && !aiDropdownRef.current.contains(event.target as Node)) {
+        setIsAiDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleCreateProject = useCallback(() => {
     dispatch({ type: 'CREATE_PROJECT_AND_ACTIVATE' });
@@ -1758,31 +1772,59 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
                     <DocumentationIcon className="w-4 h-4"/>
                     <span>Help & Docs</span>
                 </button>
-                <button 
-                    onClick={() => setAiSuggestionState('configuring')}
-                    className="p-2 rounded-lg bg-indigo-700 hover:bg-indigo-600 text-white disabled:opacity-50 disabled:cursor-not-allowed" 
-                    title="AI Layout Suggestions"
-                    disabled={!hasPdf || activeFloorplanId === GENERAL_NOTES_ID}
-                >
-                    <AiSuggestIcon className="w-5 h-5"/>
-                </button>
-                <button 
-                    onClick={() => {
-                        setAiRenameState('defining_area');
-                        toast('Please draw a rectangle on the floorplan to select equipment to rename.', {
-                          icon: '✏️',
-                          duration: 5000,
-                        });
-                    }}
-                    className="p-2 rounded-lg bg-teal-700 hover:bg-teal-600 text-white disabled:opacity-50 disabled:cursor-not-allowed" 
-                    title="AI Rename Equipment"
-                    disabled={!hasPdf || activeFloorplanId === GENERAL_NOTES_ID}
-                >
-                    <AiRenameIcon className="w-5 h-5"/>
-                </button>
-                <button onClick={() => setIsAssistantOpen(true)} className="p-2 rounded-lg bg-primary-700 hover:bg-primary-600 text-white" title="AI Assistant">
-                    <SparklesIcon className="w-5 h-5"/>
-                </button>
+                {/* AI Dropdown */}
+                <div className="relative" ref={aiDropdownRef}>
+                    <button 
+                        onClick={() => setIsAiDropdownOpen(!isAiDropdownOpen)}
+                        className="p-2 rounded-lg bg-primary-700 hover:bg-primary-600 text-white" 
+                        title="AI Tools"
+                    >
+                        <SparklesIcon className="w-5 h-5"/>
+                    </button>
+                    
+                    {isAiDropdownOpen && (
+                        <div className="absolute right-0 top-full mt-2 w-48 bg-surface border border-white/10 rounded-lg shadow-lg z-50">
+                            <div className="py-1">
+                                <button
+                                    onClick={() => {
+                                        setAiSuggestionState('configuring');
+                                        setIsAiDropdownOpen(false);
+                                    }}
+                                    className="w-full px-4 py-2 text-left text-sm text-on-surface hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
+                                    disabled={!hasPdf || activeFloorplanId === GENERAL_NOTES_ID}
+                                >
+                                    <AiSuggestIcon className="w-4 h-4 text-indigo-400"/>
+                                    <span>AI Layout Suggestions</span>
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setAiRenameState('defining_area');
+                                        setIsAiDropdownOpen(false);
+                                        toast('Please draw a rectangle on the floorplan to select equipment to rename.', {
+                                          icon: '✏️',
+                                          duration: 5000,
+                                        });
+                                    }}
+                                    className="w-full px-4 py-2 text-left text-sm text-on-surface hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
+                                    disabled={!hasPdf || activeFloorplanId === GENERAL_NOTES_ID}
+                                >
+                                    <AiRenameIcon className="w-4 h-4 text-teal-400"/>
+                                    <span>AI Rename Equipment</span>
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setIsAssistantOpen(true);
+                                        setIsAiDropdownOpen(false);
+                                    }}
+                                    className="w-full px-4 py-2 text-left text-sm text-on-surface hover:bg-white/10 flex items-center gap-3"
+                                >
+                                    <SparklesIcon className="w-4 h-4 text-primary-400"/>
+                                    <span>AI Assistant</span>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
                 <div className="hidden md:block" ref={desktopActionsMenuRef}>
                     <DesktopActionsMenu
                         isActionsMenuOpen={isActionsMenuOpen}
