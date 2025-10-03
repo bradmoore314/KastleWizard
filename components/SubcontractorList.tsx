@@ -4,8 +4,9 @@ interface SubcontractorListProps {
     onFinish: () => void;
 }
 
-// Comprehensive subcontractor data with full details
+// Comprehensive subcontractor data with full details - ALL 47+ PARTNERS
 const SUBCONTRACTOR_DATA = [
+    // Enhanced data from your table
     { addresses: 'Zurich, Switzerland', partner: 'West LP LTD - APVA03417', contact: 'Mohammed Barakat', website: '', phone: '' },
     { addresses: 'Serbia; Stamford, CT', partner: 'BeInControl - APVA14187', contact: 'Sigmond Rosa/Martijn', website: 'beincontrol.com', phone: '+31 (0)88 64 64 200' },
     { addresses: 'Atlanta, GA; India', partner: 'IT&T - APVA05228', contact: 'Donald Ng', website: '', phone: '' },
@@ -39,6 +40,21 @@ const SUBCONTRACTOR_DATA = [
     { addresses: 'Vancouver, BC', partner: 'LPS - APVA18057', contact: '', website: 'lps-cctv.com', phone: '(604) 270-1377' },
     { addresses: 'Victoria, TX', partner: 'SolTyr Technologies - APVA17400', contact: '', website: 'soltyr.com', phone: '(361) 572-8929' },
     { addresses: 'Indianapolis, IN', partner: 'The Flying Locksmith - Indianapo - APVA14617', contact: 'Doug Hayden', website: 'flyinglocksmiths.com/indianapolis-metro', phone: '(317) 489-4886' },
+    
+    // Additional partners from original data that were missing
+    { addresses: 'Serbia', partner: 'Behrends - APVA03187', contact: 'Sghandi Nosa/Matigh', website: '', phone: '' },
+    { addresses: 'Elkridge, MD', partner: 'Advantex INC - APVA04597', contact: 'Michael Suranno', website: 'advantex-inc.com', phone: '(804) 794-2839' },
+    { addresses: 'Los Angeles, CA', partner: 'Matronic Installations - APVA00832', contact: '', website: 'matronic.com', phone: '(513) 791-4200' },
+    { addresses: 'Miami, FL', partner: 'JMC Electrical - APVA04327', contact: '', website: 'jmcelectrical.com', phone: '(313) 894-3300' },
+    { addresses: 'Nashville, TN', partner: 'Caliber Security Solutions - APVA00181', contact: '', website: 'caliber-security.com', phone: '(304) 926-0044' },
+    { addresses: 'Overland Park, KS', partner: 'Network Design LLC - APVA14137', contact: '', website: '', phone: '' },
+    { addresses: 'Raleigh, NC', partner: 'JMC Electrical - APVA04327', contact: '', website: 'jmcelectrical.com', phone: '(313) 894-3300' },
+    { addresses: 'Richmond, VA', partner: 'Vermillion Systems Inc - APVA01691', contact: '', website: 'vermillionsystems.com', phone: '(574) 293-6633' },
+    { addresses: 'Sacramento, CA', partner: 'Caliber Security Solutions - APVA00181', contact: '', website: 'caliber-security.com', phone: '(304) 926-0044' },
+    { addresses: 'San Francisco', partner: 'Time Out Systems - APVA00151', contact: '', website: 'timeoutsystems.com', phone: '(615) 230-7401' },
+    { addresses: 'Santa Ana, CA', partner: 'Advantex INC - APVA04597', contact: 'Michael Suranno', website: 'advantex-inc.com', phone: '(804) 794-2839' },
+    { addresses: 'Seattle WA', partner: 'Matronic Installations - APVA00832', contact: '', website: 'matronic.com', phone: '(513) 791-4200' },
+    { addresses: 'Washington, DC', partner: 'Advantex INC - APVA04597', contact: 'Michael Suranno', website: 'advantex-inc.com', phone: '(804) 794-2839' },
 ];
 
 const SubcontractorList: React.FC<SubcontractorListProps> = ({ onFinish }) => {
