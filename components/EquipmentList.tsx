@@ -107,9 +107,10 @@ const AddDropdown: React.FC<{
 
     return (
         <div className="inline-block text-left">
-            <button ref={buttonRef} type="button" onClick={toggleDropdown} className="inline-flex items-center justify-center gap-2 rounded-md border border-primary-500 bg-primary-600 px-3 py-2 sm:px-4 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75" aria-haspopup="true" aria-expanded={isOpen}>
-                <AddIcon className="w-5 h-5" />
-                {buttonText}
+            <button ref={buttonRef} type="button" onClick={toggleDropdown} className="inline-flex items-center justify-center gap-1.5 rounded-md border border-primary-500 bg-primary-600 px-2 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75" aria-haspopup="true" aria-expanded={isOpen}>
+                <AddIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="hidden sm:inline">{buttonText}</span>
+                <span className="sm:hidden">{buttonText.split(' ')[1]}</span>
             </button>
             {isOpen && portalContainer && createPortal(DropdownMenu, portalContainer)}
         </div>
@@ -121,10 +122,10 @@ const SortableHeader: React.FC<{ label: string; sortKey: string; sortConfig: { k
     const direction = sortConfig?.direction;
     const Icon = isSorting ? (direction === 'asc' ? ArrowUp : ArrowDown) : ChevronsUpDown;
     return (
-        <th scope="col" className="px-2 py-3 font-medium text-on-surface whitespace-nowrap min-w-[120px] select-none" onClick={() => onSort(sortKey)}>
-            <div className="flex items-center gap-2 cursor-pointer">
-                {label}
-                <Icon className={`w-4 h-4 ${isSorting ? 'text-primary-400' : 'text-on-surface-variant/50'}`} />
+        <th scope="col" className="px-1 py-2 sm:px-2 sm:py-3 font-medium text-on-surface whitespace-nowrap min-w-[120px] select-none" onClick={() => onSort(sortKey)}>
+            <div className="flex items-center gap-1 sm:gap-2 cursor-pointer">
+                <span className="text-xs sm:text-sm">{label}</span>
+                <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${isSorting ? 'text-primary-400' : 'text-on-surface-variant/50'}`} />
             </div>
         </th>
     );
@@ -339,38 +340,38 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ inventory, viewContext, o
             {/* Sticky Header */}
             <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-white/10">
                 <div className="max-w-7xl mx-auto px-4 md:px-8">
-                    <div className="flex flex-col sm:flex-row justify-between sm:items-center py-4 gap-4">
+                    <div className="flex flex-col sm:flex-row justify-between sm:items-center py-2 sm:py-4 gap-2 sm:gap-4">
                         <div>
-                            <h1 className="text-3xl font-bold">Equipment List</h1>
-                            <p className="text-md text-on-surface-variant mt-1">Manage all devices and markers in this inventory.</p>
+                            <h1 className="text-xl sm:text-3xl font-bold">Equipment List</h1>
+                            <p className="text-sm sm:text-md text-on-surface-variant mt-1">Manage all devices and markers in this inventory.</p>
                         </div>
                         <div className="flex items-center gap-2 flex-wrap">
                             <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <SearchIcon className="h-5 w-5 text-on-surface-variant/70" />
+                                <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                                    <SearchIcon className="h-4 w-4 text-on-surface-variant/70" />
                                 </div>
                                 <input
                                     type="search"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="block w-full sm:w-56 pl-10 pr-10 py-2 border border-white/20 rounded-md leading-5 bg-surface text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                    className="block w-full sm:w-56 pl-8 pr-8 py-1.5 sm:py-2 border border-white/20 rounded-md leading-5 bg-surface text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
                                     placeholder="Search all fields..."
                                 />
                                 {searchQuery && (
-                                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                    <div className="absolute inset-y-0 right-0 pr-2 flex items-center">
                                         <button
                                             onClick={() => setSearchQuery('')}
                                             className="p-1 rounded-full text-on-surface-variant/70 hover:text-on-surface hover:bg-white/10"
                                             aria-label="Clear search"
                                         >
-                                            <CloseIcon className="h-4 w-4" />
+                                            <CloseIcon className="h-3 w-3" />
                                         </button>
                                     </div>
                                 )}
                             </div>
                             <AddDropdown buttonText="Add Device" items={deviceDropdownItems} onSelect={(key) => onAddDevice(key as DeviceType)} />
                             <AddDropdown buttonText="Add Marker" items={markerDropdownItems} onSelect={(key) => onAddMarker(key as MarkerType)} />
-                            <button onClick={() => handleExport('xlsx')} className="inline-flex items-center justify-center gap-2 rounded-md border border-white/20 bg-surface px-3 py-2 sm:px-4 text-sm font-medium text-on-surface hover:bg-white/10"><ExportIcon className="w-5 h-5" /> Export</button>
+                            <button onClick={() => handleExport('xlsx')} className="hidden sm:inline-flex items-center justify-center gap-2 rounded-md border border-white/20 bg-surface px-3 py-2 text-sm font-medium text-on-surface hover:bg-white/10"><ExportIcon className="w-4 h-4" /> Export</button>
                         </div>
                     </div>
                 </div>
@@ -378,30 +379,30 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ inventory, viewContext, o
 
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto">
-                <div className="max-w-7xl mx-auto p-4 md:p-8">
+                <div className="max-w-7xl mx-auto p-2 sm:p-4 md:p-8">
                     {/* Summary & Filter */}
-                    <div className="mb-8">
-                        <h2 className="text-lg font-bold mb-3">Summary</h2>
-                        <div className="flex items-center gap-3 overflow-x-auto pb-2 -mx-4 px-4">
-                            <button onClick={() => setActiveFilter('all')} className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex-shrink-0 flex items-center gap-3 ${activeFilter === 'all' ? 'bg-primary-600 text-white' : 'bg-surface hover:bg-white/10 border border-white/10'}`}>All Equipment <span className="text-xs opacity-70 bg-black/20 px-1.5 py-0.5 rounded-full">{filteredInventory.length}</span></button>
-                            {summaryItems.map(item => (<button key={item.key} onClick={() => setActiveFilter(item.key)} className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex-shrink-0 flex items-center gap-3 ${activeFilter === item.key ? 'bg-primary-600 text-white' : 'bg-surface hover:bg-white/10 border border-white/10'}`}>{item.Icon && <item.Icon className="w-5 h-5" />} {item.title} <span className="text-xs opacity-70 bg-black/20 px-1.5 py-0.5 rounded-full">{item.count}</span></button>))}
+                    <div className="mb-4 sm:mb-8">
+                        <h2 className="text-base sm:text-lg font-bold mb-2 sm:mb-3">Summary</h2>
+                        <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto pb-2 -mx-2 sm:-mx-4 px-2 sm:px-4">
+                            <button onClick={() => setActiveFilter('all')} className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors flex-shrink-0 flex items-center gap-2 sm:gap-3 ${activeFilter === 'all' ? 'bg-primary-600 text-white' : 'bg-surface hover:bg-white/10 border border-white/10'}`}>All Equipment <span className="text-xs opacity-70 bg-black/20 px-1 py-0.5 rounded-full">{filteredInventory.length}</span></button>
+                            {summaryItems.map(item => (<button key={item.key} onClick={() => setActiveFilter(item.key)} className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors flex-shrink-0 flex items-center gap-2 sm:gap-3 ${activeFilter === item.key ? 'bg-primary-600 text-white' : 'bg-surface hover:bg-white/10 border border-white/10'}`}>{item.Icon && <item.Icon className="w-4 h-4 sm:w-5 sm:h-5" />} {item.title} <span className="text-xs opacity-70 bg-black/20 px-1 py-0.5 rounded-full">{item.count}</span></button>))}
                         </div>
                     </div>
 
                     {/* Bulk Actions Bar */}
                     {selectedIds.size > 0 && (
-                        <div className="sticky top-0 z-40 mb-6 p-3 bg-primary-900/80 backdrop-blur-sm rounded-lg border border-primary-700 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
-                            <p className="font-semibold">{selectedIds.size} item(s) selected</p>
-                            <div className="flex items-center gap-2">
-                                <button onClick={() => onEditDevices(selectedItems as DeviceEdit[])} disabled={!canBulkEdit} className="flex items-center gap-2 px-3 py-1.5 text-sm bg-surface rounded-md hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed" title={canBulkEdit ? "Edit selected items" : "Can only bulk edit devices of the same type"}><Edit className="w-4 h-4" /> Edit</button>
+                        <div className="sticky top-0 z-40 mb-4 sm:mb-6 p-2 sm:p-3 bg-primary-900/80 backdrop-blur-sm rounded-lg border border-primary-700 flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-3">
+                            <p className="font-semibold text-sm sm:text-base">{selectedIds.size} item(s) selected</p>
+                            <div className="flex items-center gap-1.5 sm:gap-2">
+                                <button onClick={() => onEditDevices(selectedItems as DeviceEdit[])} disabled={!canBulkEdit} className="flex items-center gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm bg-surface rounded-md hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed" title={canBulkEdit ? "Edit selected items" : "Can only bulk edit devices of the same type"}><Edit className="w-3 h-3 sm:w-4 sm:h-4" /> Edit</button>
                                 <AddDropdown buttonText="Move" items={(activeProject?.floorplans.filter(fp => fp.id !== activeFloorplanId) || []).map(fp => ({ key: fp.id, label: fp.name }))} onSelect={(fpId) => onMoveItems(Array.from(selectedIds), fpId)} />
-                                <button onClick={() => onDeleteItems(selectedItems)} className="flex items-center gap-2 px-3 py-1.5 text-sm bg-red-600 text-white rounded-md hover:bg-red-700"><Trash2 className="w-4 h-4" /> Delete</button>
+                                <button onClick={() => onDeleteItems(selectedItems)} className="flex items-center gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm bg-red-600 text-white rounded-md hover:bg-red-700"><Trash2 className="w-3 h-3 sm:w-4 sm:h-4" /> Delete</button>
                             </div>
                         </div>
                     )}
                     
                     {/* Equipment Tables */}
-                    <div className="space-y-12">
+                    <div className="space-y-6 sm:space-y-12">
                          {devicesToDisplay.filter((key) => (groupedDevices[key as DeviceType] || []).length > 0).map((key) => {
                              const deviceList = groupedDevices[key as DeviceType];
                              const title = DEVICE_TYPE_TITLES[key as DeviceType];
@@ -411,38 +412,38 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ inventory, viewContext, o
                              const isDraggable = isReorderingEnabled && !sortConfig && !searchQuery.trim();
                              return (
                                 <div key={key}>
-                                    <h2 className="text-2xl font-bold mb-4">{title}</h2>
+                                    <h2 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4">{title}</h2>
                                     <div className="w-full overflow-x-auto bg-surface border border-white/10 rounded-xl">
-                                        <table className="w-full text-sm text-left border-collapse min-w-[800px]">
+                                        <table className="w-full text-xs sm:text-sm text-left border-collapse min-w-[800px]">
                                             <thead>
                                                 <tr className="border-b border-white/10">
-                                                    <th className="p-3 w-12"><input type="checkbox" onChange={() => handleToggleAll(deviceList.map(d => d.id))} checked={deviceList.length > 0 && deviceList.every(d => selectedIds.has(d.id))} className="h-4 w-4 rounded text-primary-600 bg-surface border-gray-500 focus:ring-primary-500"/></th>
-                                                    <th className="p-3 w-8"><GripVertical className="w-4 h-4 text-transparent" /></th>
-                                                    <th className="p-3 w-16">Image</th>
+                                                    <th className="p-2 sm:p-3 w-8 sm:w-12"><input type="checkbox" onChange={() => handleToggleAll(deviceList.map(d => d.id))} checked={deviceList.length > 0 && deviceList.every(d => selectedIds.has(d.id))} className="h-3 w-3 sm:h-4 sm:w-4 rounded text-primary-600 bg-surface border-gray-500 focus:ring-primary-500"/></th>
+                                                    <th className="p-2 sm:p-3 w-6 sm:w-8"><GripVertical className="w-3 h-3 sm:w-4 sm:h-4 text-transparent" /></th>
+                                                    <th className="p-2 sm:p-3 w-12 sm:w-16">Image</th>
                                                     <SortableHeader label="Location" sortKey="location" sortConfig={sortConfig} onSort={(sortKey) => handleSort(key, sortKey)} />
-                                                    <th className="px-2 py-3 w-28">Actions</th>
+                                                    <th className="px-1 py-2 sm:px-2 sm:py-3 w-20 sm:w-28">Actions</th>
                                                     {allKeys.map(k => <SortableHeader key={k} label={camelCaseToTitle(k.replace(/_/g, ' '))} sortKey={k} sortConfig={sortConfig} onSort={(sortKey) => handleSort(key, sortKey)} />)}
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {sortedDeviceList.map(device => (
                                                     <tr key={device.id} draggable={isDraggable} onDragStart={e => handleDragStart(e, device.id)} onDragOver={e => handleDragOver(e, device.id)} onDragLeave={handleDragLeave} onDrop={e => handleDrop(e, device.id)} className={`border-b border-white/10 last:border-b-0 transition-colors ${selectedIds.has(device.id) ? 'bg-primary-900/50' : 'hover:bg-white/5'} ${draggedItemId === device.id ? 'opacity-30' : ''} ${dropTargetId === device.id ? 'border-t-2 border-primary-500' : ''}`}>
-                                                        <td className="p-3"><input type="checkbox" checked={selectedIds.has(device.id)} onChange={() => handleToggleOne(device.id)} className="h-4 w-4 rounded text-primary-600 bg-surface border-gray-500 focus:ring-primary-500"/></td>
-                                                        <td className="p-3 text-center">{isDraggable && <GripVertical className="w-4 h-4 text-on-surface-variant/50 cursor-grab"/>}</td>
-                                                        <td className="p-2">
+                                                        <td className="p-2 sm:p-3"><input type="checkbox" checked={selectedIds.has(device.id)} onChange={() => handleToggleOne(device.id)} className="h-3 w-3 sm:h-4 sm:w-4 rounded text-primary-600 bg-surface border-gray-500 focus:ring-primary-500"/></td>
+                                                        <td className="p-2 sm:p-3 text-center">{isDraggable && <GripVertical className="w-3 h-3 sm:w-4 sm:h-4 text-on-surface-variant/50 cursor-grab"/>}</td>
+                                                        <td className="p-1 sm:p-2">
                                                             {device.data.images && device.data.images.length > 0 && (
                                                                 // FIX: Cast data object to any to allow property access.
-                                                                <ImageWithFallback localId={device.data.images[0].localId} alt={(device.data as any).location} className="w-12 h-12 object-cover rounded-md cursor-pointer" onClick={() => onViewImage(device.data.images![0].localId)} />
+                                                                <ImageWithFallback localId={device.data.images[0].localId} alt={(device.data as any).location} className="w-8 h-8 sm:w-12 sm:h-12 object-cover rounded-md cursor-pointer" onClick={() => onViewImage(device.data.images![0].localId)} />
                                                             )}
                                                         </td>
                                                         {/* FIX: Cast data object to any to allow property access. */}
-                                                        <td className="px-2 py-4 font-semibold text-on-surface">{(device.data as any).location}</td>
-                                                        <td className="px-2 py-4">
-                                                            <div className="flex items-center gap-1">
-                                                                <button onClick={() => onEditDevices(device)} className="p-2 text-on-surface-variant hover:text-primary-400" title="Edit Data"><EditDataIcon className="w-4 h-4" /></button>
-                                                                <button onClick={() => onDuplicateDevice(device)} className="p-2 text-on-surface-variant hover:text-primary-400" title="Duplicate"><CopyIcon className="w-4 h-4" /></button>
-                                                                {!allPlacedIdsOnAnyFloorplan.has(device.id) && <button onClick={() => onPlaceDevice(device)} className="p-2 text-on-surface-variant hover:text-primary-400" title="Place on Floorplan"><PlaceFromInventoryIcon className="w-4 h-4" /></button>}
-                                                                <button onClick={() => onDeleteItems([device])} className="p-2 text-on-surface-variant hover:text-red-400" title="Delete"><DeleteIcon className="w-4 h-4" /></button>
+                                                        <td className="px-1 py-2 sm:px-2 sm:py-4 font-semibold text-on-surface text-xs sm:text-sm">{(device.data as any).location}</td>
+                                                        <td className="px-1 py-2 sm:px-2 sm:py-4">
+                                                            <div className="flex items-center gap-0.5 sm:gap-1">
+                                                                <button onClick={() => onEditDevices(device)} className="p-1 sm:p-2 text-on-surface-variant hover:text-primary-400" title="Edit Data"><EditDataIcon className="w-3 h-3 sm:w-4 sm:h-4" /></button>
+                                                                <button onClick={() => onDuplicateDevice(device)} className="p-1 sm:p-2 text-on-surface-variant hover:text-primary-400" title="Duplicate"><CopyIcon className="w-3 h-3 sm:w-4 sm:h-4" /></button>
+                                                                {!allPlacedIdsOnAnyFloorplan.has(device.id) && <button onClick={() => onPlaceDevice(device)} className="p-1 sm:p-2 text-on-surface-variant hover:text-primary-400" title="Place on Floorplan"><PlaceFromInventoryIcon className="w-3 h-3 sm:w-4 sm:h-4" /></button>}
+                                                                <button onClick={() => onDeleteItems([device])} className="p-1 sm:p-2 text-on-surface-variant hover:text-red-400" title="Delete"><DeleteIcon className="w-3 h-3 sm:w-4 sm:h-4" /></button>
                                                             </div>
                                                         </td>
                                                         {allKeys.map(k => {
@@ -458,7 +459,7 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ inventory, viewContext, o
                                                                 }
                                                             }
                                                             return (
-                                                                <td key={k} className="px-2 py-4 text-on-surface-variant truncate max-w-xs" title={String(displayValue)}>
+                                                                <td key={k} className="px-1 py-2 sm:px-2 sm:py-4 text-on-surface-variant truncate max-w-xs text-xs sm:text-sm" title={String(displayValue)}>
                                                                     {displayValue}
                                                                 </td>
                                                             );
@@ -474,16 +475,16 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ inventory, viewContext, o
                          
                          {markersToDisplay.length > 0 && (
                             <div>
-                                <h2 className="text-2xl font-bold mb-4">Markers</h2>
+                                <h2 className="text-lg sm:text-2xl font-bold mb-2 sm:mb-4">Markers</h2>
                                 <div className="w-full overflow-x-auto bg-surface border border-white/10 rounded-xl">
-                                    <table className="w-full text-sm text-left border-collapse min-w-[600px]">
+                                    <table className="w-full text-xs sm:text-sm text-left border-collapse min-w-[600px]">
                                         <thead>
                                             <tr className="border-b border-white/10">
-                                                <th className="p-3 w-12"><input type="checkbox" onChange={() => handleToggleAll(markersToDisplay.map(d => d.id))} checked={markersToDisplay.length > 0 && markersToDisplay.every(d => selectedIds.has(d.id))} className="h-4 w-4 rounded text-primary-600 bg-surface border-gray-500 focus:ring-primary-500"/></th>
-                                                <th className="p-3 w-8"><GripVertical className="w-4 h-4 text-transparent" /></th>
-                                                <th className="p-3 w-16">Image</th>
+                                                <th className="p-2 sm:p-3 w-8 sm:w-12"><input type="checkbox" onChange={() => handleToggleAll(markersToDisplay.map(d => d.id))} checked={markersToDisplay.length > 0 && markersToDisplay.every(d => selectedIds.has(d.id))} className="h-3 w-3 sm:h-4 sm:w-4 rounded text-primary-600 bg-surface border-gray-500 focus:ring-primary-500"/></th>
+                                                <th className="p-2 sm:p-3 w-6 sm:w-8"><GripVertical className="w-3 h-3 sm:w-4 sm:h-4 text-transparent" /></th>
+                                                <th className="p-2 sm:p-3 w-12 sm:w-16">Image</th>
                                                 <SortableHeader label="Label" sortKey="label" sortConfig={sortConfigs['markers'] || null} onSort={(sortKey) => handleSort('markers', sortKey)} />
-                                                <th className="px-2 py-3 w-28">Actions</th>
+                                                <th className="px-1 py-2 sm:px-2 sm:py-3 w-20 sm:w-28">Actions</th>
                                                 <SortableHeader label="Notes" sortKey="notes" sortConfig={sortConfigs['markers'] || null} onSort={(sortKey) => handleSort('markers', sortKey)} />
                                             </tr>
                                         </thead>
@@ -492,25 +493,25 @@ const EquipmentList: React.FC<EquipmentListProps> = ({ inventory, viewContext, o
                                                 const isDraggable = isReorderingEnabled && !sortConfigs['markers'] && !searchQuery.trim();
                                                 return (
                                                     <tr key={marker.id} draggable={isDraggable} onDragStart={e => handleDragStart(e, marker.id)} onDragOver={e => handleDragOver(e, marker.id)} onDragLeave={handleDragLeave} onDrop={e => handleDrop(e, marker.id)} className={`border-b border-white/10 last:border-b-0 transition-colors ${selectedIds.has(marker.id) ? 'bg-primary-900/50' : 'hover:bg-white/5'} ${draggedItemId === marker.id ? 'opacity-30' : ''} ${dropTargetId === marker.id ? 'border-t-2 border-primary-500' : ''}`}>
-                                                        <td className="p-3"><input type="checkbox" checked={selectedIds.has(marker.id)} onChange={() => handleToggleOne(marker.id)} className="h-4 w-4 rounded text-primary-600 bg-surface border-gray-500 focus:ring-primary-500"/></td>
-                                                        <td className="p-3 text-center">{isDraggable && <GripVertical className="w-4 h-4 text-on-surface-variant/50 cursor-grab"/>}</td>
-                                                        <td className="p-2">
+                                                        <td className="p-2 sm:p-3"><input type="checkbox" checked={selectedIds.has(marker.id)} onChange={() => handleToggleOne(marker.id)} className="h-3 w-3 sm:h-4 sm:w-4 rounded text-primary-600 bg-surface border-gray-500 focus:ring-primary-500"/></td>
+                                                        <td className="p-2 sm:p-3 text-center">{isDraggable && <GripVertical className="w-3 h-3 sm:w-4 sm:h-4 text-on-surface-variant/50 cursor-grab"/>}</td>
+                                                        <td className="p-1 sm:p-2">
                                                             {marker.data.images && marker.data.images.length > 0 && (
                                                                 // FIX: Cast data object to any to allow property access.
-                                                                <ImageWithFallback localId={marker.data.images[0].localId} alt={(marker.data as any).label} className="w-12 h-12 object-cover rounded-md cursor-pointer" onClick={() => onViewImage(marker.data.images![0].localId)} />
+                                                                <ImageWithFallback localId={marker.data.images[0].localId} alt={(marker.data as any).label} className="w-8 h-8 sm:w-12 sm:h-12 object-cover rounded-md cursor-pointer" onClick={() => onViewImage(marker.data.images![0].localId)} />
                                                             )}
                                                         </td>
                                                         {/* FIX: Cast data object to any to allow property access. */}
-                                                        <td className="px-2 py-4 font-semibold text-on-surface">{(marker.data as any).label}</td>
-                                                        <td className="px-2 py-4">
-                                                            <div className="flex items-center gap-1">
-                                                                <button onClick={() => onEditMarker(marker)} className="p-2 text-on-surface-variant hover:text-primary-400" title="Edit Data"><EditDataIcon className="w-4 h-4" /></button>
-                                                                <button onClick={() => onDuplicateMarker(marker)} className="p-2 text-on-surface-variant hover:text-primary-400" title="Duplicate"><CopyIcon className="w-4 h-4" /></button>
-                                                                {!allPlacedIdsOnAnyFloorplan.has(marker.id) && <button onClick={() => onPlaceMarker(marker)} className="p-2 text-on-surface-variant hover:text-primary-400" title="Place on Floorplan"><PlaceFromInventoryIcon className="w-4 h-4" /></button>}
-                                                                <button onClick={() => onDeleteItems([marker])} className="p-2 text-on-surface-variant hover:text-red-400" title="Delete"><DeleteIcon className="w-4 h-4" /></button>
+                                                        <td className="px-1 py-2 sm:px-2 sm:py-4 font-semibold text-on-surface text-xs sm:text-sm">{(marker.data as any).label}</td>
+                                                        <td className="px-1 py-2 sm:px-2 sm:py-4">
+                                                            <div className="flex items-center gap-0.5 sm:gap-1">
+                                                                <button onClick={() => onEditMarker(marker)} className="p-1 sm:p-2 text-on-surface-variant hover:text-primary-400" title="Edit Data"><EditDataIcon className="w-3 h-3 sm:w-4 sm:h-4" /></button>
+                                                                <button onClick={() => onDuplicateMarker(marker)} className="p-1 sm:p-2 text-on-surface-variant hover:text-primary-400" title="Duplicate"><CopyIcon className="w-3 h-3 sm:w-4 sm:h-4" /></button>
+                                                                {!allPlacedIdsOnAnyFloorplan.has(marker.id) && <button onClick={() => onPlaceMarker(marker)} className="p-1 sm:p-2 text-on-surface-variant hover:text-primary-400" title="Place on Floorplan"><PlaceFromInventoryIcon className="w-3 h-3 sm:w-4 sm:h-4" /></button>}
+                                                                <button onClick={() => onDeleteItems([marker])} className="p-1 sm:p-2 text-on-surface-variant hover:text-red-400" title="Delete"><DeleteIcon className="w-3 h-3 sm:w-4 sm:h-4" /></button>
                                                             </div>
                                                         </td>
-                                                        <td className="px-2 py-4 text-on-surface-variant truncate max-w-xs" title={marker.data.notes || ''}>{marker.data.notes}</td>
+                                                        <td className="px-1 py-2 sm:px-2 sm:py-4 text-on-surface-variant truncate max-w-xs text-xs sm:text-sm" title={marker.data.notes || ''}>{marker.data.notes}</td>
                                                     </tr>
                                                 )
                                             })}
