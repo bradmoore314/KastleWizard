@@ -1028,10 +1028,6 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
         }
         
         if (props.selectedTool === 'place-item') {
-            // Debug: Log marker placement
-            if (process.env.NODE_ENV === 'development') {
-                console.log('Placing item at coordinates:', { x, y, tool: props.selectedTool });
-            }
             props.onPlaceItem(x, y);
         }
     }, [dragState, currentDrawing, isSelecting, selectionBox, screenToPdfCoords, updateEdits, props, edits, currentPage, dragStartCoords]);
@@ -1068,30 +1064,44 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
         e.stopPropagation();
         
         if (e.touches.length === 1) {
-            // Single touch - convert to mouse event with proper coordinates
+            // Single touch - use the same coordinate conversion as mouse events
             const touch = e.touches[0];
-            const mouseEvent = {
-                ...e,
-                clientX: touch.clientX,
-                clientY: touch.clientY,
-                button: 0,
-                preventDefault: () => e.preventDefault(),
-                stopPropagation: () => e.stopPropagation()
-            } as React.MouseEvent;
+            const { x, y } = screenToPdfCoords(touch.clientX, touch.clientY);
+            dragStartCoords.current = { x: touch.clientX, y: touch.clientY };
             
-            // Debug: Log coordinates to help diagnose placement issues
-            if (process.env.NODE_ENV === 'development') {
-                const { x, y } = screenToPdfCoords(touch.clientX, touch.clientY);
-                console.log('Touch start coordinates:', {
-                    screen: { x: touch.clientX, y: touch.clientY },
-                    pdf: { x, y },
-                    zoom,
-                    pan,
-                    tool: props.selectedTool
-                });
+            // Handle touch start the same way as mouse down
+            if (props.selectedTool === 'pan' && props.selectedEditIds.length === 0) {
+                setDragState({ type: 'move', editId: 'pan', originalEdit: {x:pan.x, y:pan.y} as any, startX: touch.clientX, startY: touch.clientY });
+                return;
             }
             
-            handleMouseDown(mouseEvent);
+            if (props.isDefiningAiArea) {
+                setIsSelecting(true);
+                setSelectionBox({ x, y, width: 0, height: 0 });
+                return;
+            }
+            
+            switch (props.selectedTool) {
+                case 'draw':
+                case 'rectangle':
+                case 'conduit': {
+                    const type = props.selectedTool;
+                    setCurrentDrawing({
+                        id: crypto.randomUUID(), type, path: `M ${x} ${y}`, x, y, width: 0, height: 0,
+                        color: type === 'conduit' ? '#0000ff' : '#ff0000', strokeWidth: type === 'conduit' ? 3 : 2,
+                        originalWidth: 1, originalHeight: 1, pageIndex: currentPage - 1, rotation: 0,
+                        fillColor: '#ff0000', fillOpacity: 0.2
+                    } as any);
+                    break;
+                }
+                case 'select':
+                    setIsSelecting(true);
+                    setSelectionBox({ x, y, width: 0, height: 0 });
+                    break;
+                case 'place-item':
+                    // For place-item, we'll handle it in touch end
+                    break;
+            }
         } else if (e.touches.length === 2) {
             // Two finger touch - prepare for pinch zoom
             const touch1 = e.touches[0];
@@ -1108,7 +1118,7 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
                 startY: centerY
             });
         }
-    }, [handleMouseDown, pan]);
+    }, [screenToPdfCoords, props.selectedTool, props.selectedEditIds, props.isDefiningAiArea, pan, currentPage]);
 
     const handleTouchMove = useCallback((e: React.TouchEvent) => {
         // Always prevent default for touch events on floorplan
@@ -1163,29 +1173,27 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
             if (dragState?.type === 'pinch') {
                 setDragState(null);
             } else {
-                // Convert to mouse event
-                const mouseEvent = {
-                    ...e,
-                    clientX: 0,
-                    clientY: 0,
-                    button: 0,
-                    preventDefault: () => e.preventDefault(),
-                    stopPropagation: () => e.stopPropagation()
-                } as React.MouseEvent;
-                
-                // Debug: Log touch end
-                if (process.env.NODE_ENV === 'development') {
-                    console.log('Touch end - calling handleMouseUp:', {
-                        tool: props.selectedTool,
-                        dragState: dragState?.type,
-                        hasDragState: !!dragState
-                    });
+                // Handle touch end the same way as mouse up
+                if (props.selectedTool === 'place-item' && dragStartCoords.current) {
+                    // For place-item, place the item at the touch start coordinates
+                    const { x, y } = screenToPdfCoords(dragStartCoords.current.x, dragStartCoords.current.y);
+                    props.onPlaceItem(x, y);
+                } else {
+                    // For other tools, use the existing mouse up logic
+                    const mouseEvent = {
+                        ...e,
+                        clientX: 0,
+                        clientY: 0,
+                        button: 0,
+                        preventDefault: () => e.preventDefault(),
+                        stopPropagation: () => e.stopPropagation()
+                    } as React.MouseEvent;
+                    
+                    handleMouseUp(mouseEvent);
                 }
-                
-                handleMouseUp(mouseEvent);
             }
         }
-    }, [handleMouseUp, dragState]);
+    }, [handleMouseUp, dragState, props.selectedTool, props.onPlaceItem, screenToPdfCoords]);
     
     useImperativeHandle(ref, () => ({
         zoomIn: () => handleWheel({ deltaY: -1, clientX: containerRef.current!.clientWidth/2, clientY: containerRef.current!.clientHeight/2, preventDefault: () => {} } as React.WheelEvent),
