@@ -4,55 +4,41 @@ interface SubcontractorListProps {
     onFinish: () => void;
 }
 
-// Sample subcontractor data (this would typically come from a database or API)
+// Comprehensive subcontractor data with full details
 const SUBCONTRACTOR_DATA = [
-    { partner: 'West LP LTD - APVA03417', contact: 'Mohammed Barakat', phone: 'T&T - APVA03226 - Donald Ng', address: 'Time Out Systems - APVA00151 - Nick Birt' },
-    { partner: 'Behrends - APVA03187', contact: 'Sghandi Nosa/Matigh', phone: 'Advanced Security Solutions - APVA01824 - Mark Ricciardi' },
-    { partner: 'Atlanta, GA', contact: 'SDS SOLUTIONS LLC', phone: 'Sonet Electrical Systems - APVA00137 - Brian Sousa' },
-    { partner: 'Birmingham, AL 35244', contact: 'Primestar Integration - APVA06817', phone: 'Network Design LLC - APVA04137' },
-    { partner: 'Boca, FL', contact: 'Caliber Security Solutions - APVA00181', phone: 'Site Security - APVA00456 - Michael Lorino' },
-    { partner: 'Bogota, Colombia', contact: 'Network Design LLC - APVA04137', phone: 'Advantex INC - APVA04597 - Michael Suranno' },
-    { partner: 'Boston, MA', contact: 'Matonic Installations - APVA00832', phone: 'JMC Electrical - APVA00427' },
-    { partner: 'Calabasas, CA', contact: 'Vermillion Systems Inc - APVA01691', phone: 'Advantex INC - APVA04597 - Michael Suranno' },
-    { partner: 'Cary, NC', contact: 'Caliber Security Solutions - APVA00181', phone: 'T&T - APVA03226 - Donald Ng' },
-    { partner: 'Charleston, WV', contact: 'Time Out Systems - APVA00151 - Nick Birt' },
-    { partner: 'Charlotte, NC', contact: 'Network Design LLC - APVA04137' },
-    { partner: 'Chesapeake, VA', contact: 'Advantex INC - APVA04597 - Michael Suranno' },
-    { partner: 'Cincinnati, OH', contact: 'Matonic Installations - APVA00832' },
-    { partner: 'Detroit, MI', contact: 'JMC Electrical - APVA00427' },
-    { partner: 'Elkhart, IN', contact: 'Vermillion Systems Inc - APVA01691' },
-    { partner: 'Elkridge, MD', contact: 'Advantex INC - APVA04597 - Michael Suranno' },
-    { partner: 'Guadalajara, MX', contact: 'Caliber Security Solutions - APVA00181' },
-    { partner: 'India', contact: 'T&T - APVA03226 - Donald Ng' },
-    { partner: 'Jacksonville, FL', contact: 'Time Out Systems - APVA00151 - Nick Birt' },
-    { partner: 'Lake Oswego, OR', contact: 'Network Design LLC - APVA04137' },
-    { partner: 'Lewisville, TX', contact: 'Advantex INC - APVA04597 - Michael Suranno' },
-    { partner: 'Los Angeles, CA', contact: 'Matonic Installations - APVA00832' },
-    { partner: 'Miami, FL', contact: 'JMC Electrical - APVA00427' },
-    { partner: 'Milwaukee, WI', contact: 'Vermillion Systems Inc - APVA01691' },
-    { partner: 'Nashville, TN', contact: 'Caliber Security Solutions - APVA00181' },
-    { partner: 'New Orleans', contact: 'T&T - APVA03226 - Donald Ng' },
-    { partner: 'New York, NY', contact: 'Time Out Systems - APVA00151 - Nick Birt' },
-    { partner: 'Overland Park, KS', contact: 'Network Design LLC - APVA04137' },
-    { partner: 'Palo Alto, CA', contact: 'Advantex INC - APVA04597 - Michael Suranno' },
-    { partner: 'Panama City, Panama', contact: 'Matonic Installations - APVA00832' },
-    { partner: 'Raleigh, NC', contact: 'JMC Electrical - APVA00427' },
-    { partner: 'Richmond, VA', contact: 'Vermillion Systems Inc - APVA01691' },
-    { partner: 'Sacramento, CA', contact: 'Caliber Security Solutions - APVA00181' },
-    { partner: 'Saint Louis, MO', contact: 'T&T - APVA03226 - Donald Ng' },
-    { partner: 'San Francisco', contact: 'Time Out Systems - APVA00151 - Nick Birt' },
-    { partner: 'San Juan, Puerto Rico', contact: 'Network Design LLC - APVA04137' },
-    { partner: 'Santa Ana, CA', contact: 'Advantex INC - APVA04597 - Michael Suranno' },
-    { partner: 'Seattle WA', contact: 'Matonic Installations - APVA00832' },
-    { partner: 'Serbia', contact: 'JMC Electrical - APVA00427' },
-    { partner: 'Stamford, CT', contact: 'Vermillion Systems Inc - APVA01691' },
-    { partner: 'Tampa, FL', contact: 'Caliber Security Solutions - APVA00181' },
-    { partner: 'Toronto, Canada', contact: 'T&T - APVA03226 - Donald Ng' },
-    { partner: 'Vancouver, BC', contact: 'Time Out Systems - APVA00151 - Nick Birt' },
-    { partner: 'Victoria, TX', contact: 'Network Design LLC - APVA04137' },
-    { partner: 'Washington, DC', contact: 'Advantex INC - APVA04597 - Michael Suranno' },
-    { partner: 'Zurich, Switzerland', contact: 'Matonic Installations - APVA00832' },
-    { partner: 'Indianapolis, IN', contact: 'JMC Electrical - APVA00427' },
+    { addresses: 'Zurich, Switzerland', partner: 'West LP LTD - APVA03417', contact: 'Mohammed Barakat', website: '', phone: '' },
+    { addresses: 'Serbia; Stamford, CT', partner: 'BeInControl - APVA14187', contact: 'Sigmond Rosa/Martijn', website: 'beincontrol.com', phone: '+31 (0)88 64 64 200' },
+    { addresses: 'Atlanta, GA; India', partner: 'IT&T - APVA05228', contact: 'Donald Ng', website: '', phone: '' },
+    { addresses: 'Atlanta, GA; Nashville, TN', partner: 'Time Out Systems - APVA00151', contact: '', website: 'timeoutsystems.com', phone: '(615) 230-7401' },
+    { addresses: 'Bellevue, WA; Seattle WA', partner: 'FirePower INC - APVA07197', contact: 'Nick Birr', website: 'firepower-inc.com', phone: '(425) 881-8884' },
+    { addresses: 'Birmingham, AL 35244', partner: 'Atversatle llc. - Aaron Toth', contact: 'Aaron Toth', website: 'at-versatile.com', phone: '(205) 545-0219' },
+    { addresses: 'Boca, FL; Miami, FL; Tampa, FL', partner: 'Advanced Security Solutions - APVA01824', contact: 'Mark Ricciardi', website: 'advancedsecurity.solutions', phone: '(561) 995-1770' },
+    { addresses: 'Bogota, Colombia', partner: 'SDS SOLUTIONS LLC', contact: '', website: 'sds.com.co', phone: '+57 (1) 743 05 05' },
+    { addresses: 'Boston, MA', partner: 'Sonet Electrical Systems - APVA01137', contact: 'Brian Souza', website: 'sonetelectrical.com', phone: '(781) 331-5058' },
+    { addresses: 'Calabasas, CA; Los Angeles, CA; Santa Ana, CA', partner: 'Primestar Integration - APVA06817', contact: '', website: 'primestar.net', phone: '(818) 222-1370' },
+    { addresses: 'Cary, NC; Charlotte, NC; Overland Park, KS', partner: 'Network Design LLC - APVA14137', contact: '', website: '', phone: '' },
+    { addresses: 'Charleston, WV; Guadalajara, MX; Monterrey, Mexico', partner: 'Caliber Security Solutions - APVA00181', contact: '', website: 'caliber-security.com', phone: '(304) 926-0044' },
+    { addresses: 'Charlotte, NC; Raleigh, NC', partner: 'Site Security - APVA00456', contact: 'Michael Lorino', website: 'sitesecurityllc.com', phone: '(704) 504-9496' },
+    { addresses: 'Chesapeake, VA; Elkridge, MD; Richmond, VA', partner: 'Advantex INC - APVA04597', contact: 'Michael Suranno', website: 'advantex-inc.com', phone: '(804) 794-2839' },
+    { addresses: 'Cincinnati, OH', partner: 'Matronic Installations - APVA00832', contact: '', website: 'matronic.com', phone: '(513) 791-4200' },
+    { addresses: 'Detroit, MI', partner: 'JMC Electrical - APVA04327', contact: '', website: 'jmcelectrical.com', phone: '(313) 894-3300' },
+    { addresses: 'Elkhart, IN', partner: 'Vermillion Systems Inc - APVA01691', contact: '', website: 'vermillionsystems.com', phone: '(574) 293-6633' },
+    { addresses: 'Jacksonville, FL', partner: 'Cook Electric - APVA15407', contact: '', website: 'cookelectric.net', phone: '(904) 693-4888' },
+    { addresses: 'Lake Oswego, OR', partner: 'AROCK Technologies - APVA17877', contact: '', website: 'arocktech.com', phone: '(503) 620-0501' },
+    { addresses: 'Lewisville, TX', partner: 'Castle Security - APVA19207', contact: 'Larry Stevenson', website: 'castlesecurity.com', phone: '(972) 335-0899' },
+    { addresses: 'Milwaukee, WI', partner: 'Staff Electric- APVA06847', contact: '', website: 'staff-electric.com', phone: '(262) 781-9060' },
+    { addresses: 'New Orleans', partner: 'VEC Solutions - APVA01997', contact: '', website: 'vec-solutions.com', phone: '(504) 233-0789' },
+    { addresses: 'New York, NY; Washington, DC', partner: 'JM Sound & Integration - APVA02540', contact: '', website: 'jmsound.com', phone: '(212) 695-1990' },
+    { addresses: 'Palo Alto, CA; Sacramento, CA; San Francisco', partner: 'Segen Security, Inc. - APVA06408', contact: '', website: 'segensecurity.com', phone: '(650) 843-0400' },
+    { addresses: 'Panama City, Panama', partner: 'STS de Panama - APVA18417', contact: 'Nina Vaprio', website: 'sts.com.pa', phone: '+507 265-6515' },
+    { addresses: 'Saint Louis, MO', partner: 'Guarantee Electrical - APVA01720', contact: '', website: 'geco.com', phone: '(314) 772-5400' },
+    { addresses: 'San Juan, Puerto Rico', partner: 'Bonneville Contracting - APVA16377', contact: '', website: 'bonnevillepr.com', phone: '(787) 720-2020' },
+    { addresses: 'Stamford, CT', partner: 'Elite Guard Networks - APVA18523', contact: '', website: 'eliteguardnetworks.com', phone: '(203) 914-8141' },
+    { addresses: 'Tampa, FL', partner: 'Capital Security Solutions - APVA03325', contact: '', website: 'capitalsecurityfl.com', phone: '(813) 540-1681' },
+    { addresses: 'Toronto, Canada', partner: 'SydeWire Technologies - APVA18357', contact: '', website: 'sydewire.com', phone: '(888) 793-3947' },
+    { addresses: 'Vancouver, BC', partner: 'LPS - APVA18057', contact: '', website: 'lps-cctv.com', phone: '(604) 270-1377' },
+    { addresses: 'Victoria, TX', partner: 'SolTyr Technologies - APVA17400', contact: '', website: 'soltyr.com', phone: '(361) 572-8929' },
+    { addresses: 'Indianapolis, IN', partner: 'The Flying Locksmith - Indianapo - APVA14617', contact: 'Doug Hayden', website: 'flyinglocksmiths.com/indianapolis-metro', phone: '(317) 489-4886' },
 ];
 
 const SubcontractorList: React.FC<SubcontractorListProps> = ({ onFinish }) => {
@@ -63,7 +49,9 @@ const SubcontractorList: React.FC<SubcontractorListProps> = ({ onFinish }) => {
         SUBCONTRACTOR_DATA.filter(partner =>
             partner.partner.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (partner.contact && partner.contact.toLowerCase().includes(searchTerm.toLowerCase())) ||
-            (partner.phone && partner.phone.toLowerCase().includes(searchTerm.toLowerCase()))
+            (partner.phone && partner.phone.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (partner.addresses && partner.addresses.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (partner.website && partner.website.toLowerCase().includes(searchTerm.toLowerCase()))
         ), [searchTerm]
     );
 
@@ -105,18 +93,33 @@ const SubcontractorList: React.FC<SubcontractorListProps> = ({ onFinish }) => {
                     <div className="space-y-1">
                         {filteredPartners.map((subcontractor, index) => (
                             <div key={index} className="bg-surface/50 p-3 rounded border border-white/10 hover:border-primary-400/30 hover:bg-surface/70 transition-all duration-200">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-sm">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-sm">
                                     <div className="min-w-0">
                                         <div className="font-semibold text-primary-400 truncate">{subcontractor.partner}</div>
                                         <div className="text-xs text-on-surface-variant">Company</div>
                                     </div>
                                     <div className="min-w-0">
-                                        <div className="truncate">{subcontractor.contact}</div>
+                                        <div className="text-xs text-on-surface-variant break-words">{subcontractor.addresses}</div>
+                                        <div className="text-xs text-on-surface-variant">Location(s)</div>
+                                    </div>
+                                    <div className="min-w-0">
+                                        <div className="truncate">{subcontractor.contact || '-'}</div>
                                         <div className="text-xs text-on-surface-variant">Contact</div>
                                     </div>
                                     <div className="min-w-0 sm:col-span-2 lg:col-span-1">
-                                        <div className="text-xs text-on-surface-variant truncate">{subcontractor.phone}</div>
-                                        <div className="text-xs text-on-surface-variant">Details</div>
+                                        <div className="space-y-1">
+                                            {subcontractor.phone && (
+                                                <div className="text-xs text-on-surface-variant truncate">{subcontractor.phone}</div>
+                                            )}
+                                            {subcontractor.website && (
+                                                <div className="text-xs text-blue-400 truncate">
+                                                    <a href={`https://${subcontractor.website}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                                        {subcontractor.website}
+                                                    </a>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="text-xs text-on-surface-variant">{subcontractor.phone ? 'Phone' : subcontractor.website ? 'Website' : 'Contact'}</div>
                                     </div>
                                 </div>
                             </div>
