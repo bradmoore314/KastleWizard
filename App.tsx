@@ -321,6 +321,7 @@ const App = () => {
 
 
   const [activePdfJsDoc, setActivePdfJsDoc] = useState<PDFDocumentProxy | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
   const [activePageDimensions, setActivePageDimensions] = useState<{ width: number, height: number }[]>([]);
   
   const [selectedTool, setSelectedTool] = useState<Tool>('select');
@@ -397,6 +398,8 @@ const App = () => {
 
 
   const hasPdf = !!activeFloorplan?.pdfFileName;
+  const hasImage = !!activeFloorplan?.imageFileName;
+  const hasFloorplan = hasPdf || hasImage;
   
   const canUndo = undoStack.length > 0;
   const canRedo = redoStack.length > 0;
@@ -1056,11 +1059,13 @@ const App = () => {
 
     if (!activeFloorplanId) return;
 
-    const hasPdfForActiveFloorplan = projects
+    const activeFloorplan = projects
         .find(p => p.id === activeProjectId)?.floorplans
-        .find(f => f.id === activeFloorplanId)?.pdfFileName;
+        .find(f => f.id === activeFloorplanId);
 
-    if (hasPdfForActiveFloorplan) {
+    const hasFloorplanForActive = activeFloorplan && (activeFloorplan.pdfFileName || activeFloorplan.imageFileName);
+
+    if (hasFloorplanForActive) {
         setView('editor');
     } else if (activeFloorplanId !== GENERAL_NOTES_ID) {
         // For floorplans without a PDF, default to the equipment list view.
@@ -1073,36 +1078,60 @@ const App = () => {
     let isCancelled = false;
 
     const loadActivePdf = async () => {
-      if (!activeFloorplan || !activeFloorplan.pdfFileName) {
+      if (!activeFloorplan) {
         setActivePdfJsDoc(null);
+        setImageUrl(undefined);
         setActivePageDimensions([{width: 612, height: 792}]);
         setCurrentPage(1);
         return;
       }
-      
+
+      // Check if it's a PDF or image
+      const isPdf = !!activeFloorplan.pdfFileName;
+      const isImage = !!activeFloorplan.imageFileName;
+
+      if (!isPdf && !isImage) {
+        setActivePdfJsDoc(null);
+        setImageUrl(undefined);
+        setActivePageDimensions([{width: 612, height: 792}]);
+        setCurrentPage(1);
+        return;
+      }
+
       try {
         const file = await getFile(activeFloorplan.id);
         if (!file || isCancelled) return;
+
+        if (isPdf) {
+          // Handle PDF files
+          const loadingTask = pdfjsLib.getDocument(await file.arrayBuffer());
+          const pdf = await loadingTask.promise;
         
-        const loadingTask = pdfjsLib.getDocument(await file.arrayBuffer());
-        const pdf = await loadingTask.promise;
-        
-        const pageDimensionPromises = Array.from({ length: pdf.numPages }, (_, i) => 
-            pdf.getPage(i + 1).then(page => {
-                const viewport = page.getViewport({ scale: 1 });
-                return { width: viewport.width, height: viewport.height };
-            })
-        );
-        const pageDimensions = await Promise.all(pageDimensionPromises);
-        
-        if (!isCancelled) {
-          setActivePdfJsDoc(pdf);
-          setActivePageDimensions(pageDimensions);
+          const pageDimensionPromises = Array.from({ length: pdf.numPages }, (_, i) => 
+              pdf.getPage(i + 1).then(page => {
+                  const viewport = page.getViewport({ scale: 1 });
+                  return { width: viewport.width, height: viewport.height };
+              })
+          );
+          const pageDimensions = await Promise.all(pageDimensionPromises);
+          
+          if (!isCancelled) {
+            setActivePdfJsDoc(pdf);
+            setActivePageDimensions(pageDimensions);
+            setCurrentPage(1);
+          }
+        } else if (isImage) {
+          // Handle image files
+          const imageUrl = URL.createObjectURL(file);
+          setImageUrl(imageUrl);
+          
+          // For images, we'll use a default size and let the image determine its dimensions
+          setActivePageDimensions([{ width: 800, height: 600 }]);
           setCurrentPage(1);
         }
       } catch (err) {
-        console.error("Failed to load active PDF:", err);
-        toast.error("Could not load floorplan PDF.");
+        console.error("Failed to load active floorplan:", err);
+        toast.error("Could not load floorplan file.");
       }
     };
     
@@ -1181,19 +1210,19 @@ const App = () => {
     }
 
     // Otherwise, find a suitable floorplan to navigate to.
-    const floorplansWithPdfs = activeProject.floorplans.filter(f => f.pdfFileName);
+    const floorplansWithFiles = activeProject.floorplans.filter(f => f.pdfFileName || f.imageFileName);
 
-    if (floorplansWithPdfs.length > 0) {
+    if (floorplansWithFiles.length > 0) {
         // Activate placement mode
         setSelectedTool('place-item');
         setItemToPlace(device);
         
-        // Navigate to the first available floorplan with a PDF. If multiple exist, this is a simple default.
-        const targetFloorplanId = floorplansWithPdfs[0].id;
+        // Navigate to the first available floorplan with a file. If multiple exist, this is a simple default.
+        const targetFloorplanId = floorplansWithFiles[0].id;
         handleSetActiveFloorplan(targetFloorplanId);
         // An existing useEffect hook will switch the view to 'editor' upon this state change.
     } else {
-        toast.error("Add a PDF to a floorplan to start placing items.");
+        toast.error("Add a PDF or image to a floorplan to start placing items.");
     }
   };
 
@@ -1687,7 +1716,7 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
         toast.success(`${editIds.length} item(s) moved.`);
     };
 
-  const isEditorViewDisabled = !activeFloorplan || !activeFloorplan.pdfFileName;
+  const isEditorViewDisabled = !activeFloorplan || (!activeFloorplan.pdfFileName && !activeFloorplan.imageFileName);
 
     // FIX: Add a handler for updating edits and pass it to the PdfViewer.
     const handleUpdateEdits = useCallback((previous: AnyEdit[], current: AnyEdit[]) => {
@@ -1791,7 +1820,7 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
                                         setIsAiDropdownOpen(false);
                                     }}
                                     className="w-full px-4 py-2 text-left text-sm text-on-surface hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
-                                    disabled={!hasPdf || activeFloorplanId === GENERAL_NOTES_ID}
+                                    disabled={!hasFloorplan || activeFloorplanId === GENERAL_NOTES_ID}
                                 >
                                     <AiSuggestIcon className="w-4 h-4 text-indigo-400"/>
                                     <span>AI Layout Suggestions</span>
@@ -1806,7 +1835,7 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
                                         });
                                     }}
                                     className="w-full px-4 py-2 text-left text-sm text-on-surface hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
-                                    disabled={!hasPdf || activeFloorplanId === GENERAL_NOTES_ID}
+                                    disabled={!hasFloorplan || activeFloorplanId === GENERAL_NOTES_ID}
                                 >
                                     <AiRenameIcon className="w-4 h-4 text-teal-400"/>
                                     <span>AI Rename Equipment</span>
@@ -1900,6 +1929,7 @@ Respond with a JSON object containing a 'renames' array. Each object in the arra
                         <PdfViewer
                             ref={pdfViewerRef}
                             pdfJsDoc={activePdfJsDoc}
+                            imageUrl={imageUrl}
                             currentPage={currentPage}
                             edits={editorInventory}
                             updateEdits={handleUpdateEdits}

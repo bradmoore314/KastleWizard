@@ -1,4 +1,5 @@
 import { ChecklistCategory, ChecklistQuestion, Project, AccessDoorData } from '../types';
+import { ChecklistAutofillService } from './aiChecklistAutofill';
 
 export const CHECKLIST_CATEGORIES: readonly ChecklistCategory[] = [
     { key: 'general', title: 'General Project Information', icon: '🏢' },
@@ -187,3 +188,37 @@ export const ALL_QUESTIONS: readonly ChecklistQuestion[] = [
     { id: 'change5', text: '📄 Are hardware models clearly specified?', categoryKey: 'changeorders', options: ['Yes', 'No'], assignedTo: 'Sales Engineer' },
     { id: 'change8', text: '🏗️ Do quotes need to be rebuilt?', categoryKey: 'changeorders', options: ['Yes', 'No'], assignedTo: 'BDM / SE' },
 ];
+
+// Enhanced derivation functions for better auto-answering
+const enhancedDerivations = ChecklistAutofillService.getEnhancedDerivations();
+
+// Apply enhanced derivations to questions
+export const ENHANCED_QUESTIONS: readonly ChecklistQuestion[] = ALL_QUESTIONS.map(question => ({
+    ...question,
+    derivation: enhancedDerivations[question.id] || question.derivation
+}));
+
+// Function to get AI autofill suggestions
+export async function getAIAutofillSuggestions(project: Project, apiKey: string): Promise<Record<string, string>> {
+    if (!apiKey) {
+        console.warn('No API key provided for AI autofill');
+        return {};
+    }
+
+    try {
+        const autofillService = new ChecklistAutofillService(apiKey);
+        const results = await autofillService.autofillQuestions(project, ALL_QUESTIONS);
+        
+        const suggestions: Record<string, string> = {};
+        results.forEach(result => {
+            if (result.confidence === 'high' || result.confidence === 'medium') {
+                suggestions[result.questionId] = result.answer;
+            }
+        });
+        
+        return suggestions;
+    } catch (error) {
+        console.error('Error getting AI autofill suggestions:', error);
+        return {};
+    }
+}

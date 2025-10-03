@@ -14,6 +14,7 @@ export interface PdfViewerHandle {
 // Props for the component
 interface PdfViewerProps {
   pdfJsDoc: PDFDocumentProxy | null;
+  imageUrl?: string;
   currentPage: number;
   edits: AnyEdit[];
   updateEdits: (previous: AnyEdit[], current: AnyEdit[]) => void;
@@ -1251,6 +1252,10 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
     const isSingleSelection = props.selectedEditIds.length === 1;
     const textEditToRender = editingText ? props.edits.find(e => e.id === editingText.id) as TextEdit : null;
 
+    // Check if we have an image instead of PDF
+    const hasImage = props.imageUrl && !props.pdfJsDoc;
+    const hasPdf = props.pdfJsDoc;
+
     return (
         <div
             ref={containerRef}
@@ -1265,6 +1270,21 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
         >
+            {hasImage && (
+                <img
+                    src={props.imageUrl}
+                    alt="Floorplan"
+                    className="absolute top-0 left-0 max-w-full max-h-full object-contain"
+                    style={{
+                        transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+                        transformOrigin: 'top left',
+                        width: pageDim.width,
+                        height: pageDim.height
+                    }}
+                    draggable={false}
+                />
+            )}
+            {!hasImage && (
                 <div
                     style={{
                         transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
@@ -1353,7 +1373,8 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
                         }}
                     />
                 )}
-            </div>
+                </div>
+            )}
         </div>
     );
 });

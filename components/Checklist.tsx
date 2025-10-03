@@ -2,8 +2,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Project, ChecklistQuestion, CameraData } from '../types';
 import { useAppDispatch } from '../state/AppContext';
-import { ALL_QUESTIONS, CHECKLIST_CATEGORIES } from '../services/questions';
-import { ChevronDown, SparklesIcon } from 'lucide-react';
+import { ALL_QUESTIONS, CHECKLIST_CATEGORIES, ENHANCED_QUESTIONS, getAIAutofillSuggestions } from '../services/questions';
+import { ChevronDown, SparklesIcon, Wand2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface ChecklistProps {
     project: Project;
@@ -141,6 +142,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({ categoryKey, project,
 const Checklist: React.FC<ChecklistProps> = ({ project, onRunAnalysis, isAnalyzing }) => {
     const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'unanswered', 'answered'
     const [assigneeFilter, setAssigneeFilter] = useState('all');
+    const [isAutofilling, setIsAutofilling] = useState(false);
 
     const assignees = useMemo(() => {
         const all = new Set(ALL_QUESTIONS.map(q => q.assignedTo));
@@ -157,8 +159,61 @@ const Checklist: React.FC<ChecklistProps> = ({ project, onRunAnalysis, isAnalyzi
         );
     }, [project]);
 
+    const handleAIAutofill = async () => {
+        if (!import.meta.env.VITE_API_KEY) {
+            toast.error('AI Autofill requires an API key to be configured.');
+            return;
+        }
+
+        setIsAutofilling(true);
+        try {
+            const suggestions = await getAIAutofillSuggestions(project, import.meta.env.VITE_API_KEY);
+            
+            if (Object.keys(suggestions).length === 0) {
+                toast('No additional questions could be auto-filled based on current project data.', {
+                    icon: 'ℹ️',
+                    duration: 4000,
+                });
+                return;
+            }
+
+            // Apply suggestions to project
+            const updates: Record<string, string> = {};
+            Object.entries(suggestions).forEach(([questionId, answer]) => {
+                if (!project.checklistAnswers[questionId]) {
+                    updates[questionId] = answer;
+                }
+            });
+
+            if (Object.keys(updates).length > 0) {
+                dispatch({ 
+                    type: 'UPDATE_CHECKLIST', 
+                    payload: { 
+                        projectId: project.id, 
+                        answers: updates 
+                    } 
+                });
+                
+                toast.success(`AI auto-filled ${Object.keys(updates).length} questions!`, {
+                    icon: '🤖',
+                    duration: 4000,
+                });
+            } else {
+                toast('All questions that could be auto-filled are already answered.', {
+                    icon: '✅',
+                    duration: 3000,
+                });
+            }
+        } catch (error) {
+            console.error('AI Autofill error:', error);
+            toast.error('Failed to auto-fill questions. Please try again.');
+        } finally {
+            setIsAutofilling(false);
+        }
+    };
+
     const filteredQuestions = useMemo(() => {
-        return ALL_QUESTIONS.filter(q => {
+        return ENHANCED_QUESTIONS.filter(q => {
             // Branching logic: show child only if parent has the correct value
             if (q.branchingCondition) {
                 const parentAnswer = project.checklistAnswers[q.branchingCondition.questionId];
@@ -204,19 +259,35 @@ const Checklist: React.FC<ChecklistProps> = ({ project, onRunAnalysis, isAnalyzi
                             A comprehensive list of questions to ensure project success.
                         </p>
                     </div>
-                    <button
-                        onClick={onRunAnalysis}
-                        disabled={isAnalyzing}
-                        className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-surface text-on-surface rounded-lg hover:bg-white/10 transition-colors border border-white/10 disabled:opacity-50 disabled:cursor-not-allowed self-start md:self-center text-xs sm:text-sm"
-                        title="Run AI Quote Analysis"
-                    >
-                        {isAnalyzing ? (
-                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-500"></div>
-                        ) : (
-                            <SparklesIcon className="w-5 h-5 text-yellow-400" />
-                        )}
-                        <span>{isAnalyzing ? 'Analyzing...' : 'Run AI Analysis'}</span>
-                    </button>
+                    <div className="flex gap-2 sm:gap-3">
+                        <button
+                            onClick={handleAIAutofill}
+                            disabled={isAutofilling}
+                            className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed self-start md:self-center text-xs sm:text-sm"
+                            title="AI Auto-fill Checklist Questions"
+                        >
+                            {isAutofilling ? (
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            ) : (
+                                <Wand2 className="w-4 h-4" />
+                            )}
+                            <span className="hidden sm:inline">AI Auto-fill</span>
+                            <span className="sm:hidden">Auto-fill</span>
+                        </button>
+                        <button
+                            onClick={onRunAnalysis}
+                            disabled={isAnalyzing}
+                            className="flex items-center justify-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-surface text-on-surface rounded-lg hover:bg-white/10 transition-colors border border-white/10 disabled:opacity-50 disabled:cursor-not-allowed self-start md:self-center text-xs sm:text-sm"
+                            title="Run AI Quote Analysis"
+                        >
+                            {isAnalyzing ? (
+                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-500"></div>
+                            ) : (
+                                <SparklesIcon className="w-5 h-5 text-yellow-400" />
+                            )}
+                            <span>{isAnalyzing ? 'Analyzing...' : 'Run AI Analysis'}</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-4 mb-8 p-4 bg-surface border border-white/10 rounded-xl">

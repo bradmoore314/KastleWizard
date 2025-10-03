@@ -48,15 +48,21 @@ const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ isOpen, onClose, onTa
         const file = e.target.files?.[0];
         if (!file || !activeProjectId) return;
 
-        if (!file.type.includes('pdf')) {
-            toast.error("Please select a PDF file.");
+        // Accept PDFs and common image formats
+        const isPdf = file.type.includes('pdf');
+        const isImage = file.type.includes('image') || file.type.includes('jpeg') || file.type.includes('png') || file.type.includes('jpg');
+
+        if (!isPdf && !isImage) {
+            toast.error("Please select a PDF, JPEG, or PNG file.");
             return;
         }
 
+        const baseName = file.name.replace(/\.(pdf|jpe?g|png)$/i, '');
         const newFloorplan: Floorplan = {
             id: crypto.randomUUID(),
-            name: file.name.replace('.pdf', ''),
-            pdfFileName: file.name,
+            name: baseName,
+            pdfFileName: isPdf ? file.name : undefined,
+            imageFileName: isImage ? file.name : undefined,
             inventory: [],
             placedEditIds: [],
         };
@@ -161,7 +167,7 @@ const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ isOpen, onClose, onTa
                     <FilePlus size={18} />
                     Add Floorplan
                 </button>
-                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".pdf" className="hidden" />
+                <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".pdf,.jpg,.jpeg,.png,image/*" className="hidden" />
             </div>
             <div className="flex-1 overflow-y-auto p-2">
                 <h3 className="px-2 py-1 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Projects</h3>

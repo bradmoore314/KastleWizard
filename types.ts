@@ -432,7 +432,9 @@ export interface Floorplan {
   id: string;
   name: string;
   pdfFileName?: string;
+  imageFileName?: string;
   pdfFile?: File; // Transient, not stored in localStorage
+  imageFile?: File; // Transient, not stored in localStorage
   inventory: AnyEdit[];
   placedEditIds: string[];
 }
