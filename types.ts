@@ -97,6 +97,12 @@ export interface EquipmentImage {
 }
 
 // Based on schema `AccessPoint`
+// Component status for existing vs. future components
+export interface ComponentStatus {
+  hasComponent: boolean; // Whether the component exists/will exist
+  isExisting: boolean;   // true = existing, false = future installation
+}
+
 export interface AccessDoorData {
   location: string;
   notes?: string;
@@ -113,11 +119,21 @@ export interface AccessDoorData {
   lock_type: string;
   monitoring_type: string;
   floor?: number;
+  
+  // Legacy boolean fields (maintained for backward compatibility)
   door_contact: boolean;
   rex: boolean;
   push_to_exit: boolean;
   intercom_buzzer: boolean;
   crash_bar: boolean;
+  
+  // New component status fields (optional for backward compatibility)
+  door_contact_status?: ComponentStatus;
+  rex_status?: ComponentStatus;
+  push_to_exit_status?: ComponentStatus;
+  intercom_buzzer_status?: ComponentStatus;
+  crash_bar_status?: ComponentStatus;
+  
   lock_provider?: string;
   interior_perimeter: string; // Custom field, not in schema, but used for icon
 }
@@ -275,7 +291,7 @@ export interface ChatMessage {
 export interface FormFieldConfig {
     label: string;
     icon: string;
-    type: 'text' | 'select' | 'boolean' | 'textarea' | 'number' | 'password';
+    type: 'text' | 'select' | 'boolean' | 'textarea' | 'number' | 'password' | 'component_status';
     // FIX: Changed from `readonly string[]` to `string[]` to allow modification in admin mode.
     options?: string[];
     visible: boolean;

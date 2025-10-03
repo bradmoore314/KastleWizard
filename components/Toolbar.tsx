@@ -25,12 +25,12 @@ interface ToolbarProps {
 }
 
 const baseTools: { name: Tool; icon: React.FC<React.SVGProps<SVGSVGElement>>; title: string }[] = [
-  { name: 'select', icon: SelectIcon, title: 'Select (V)' },
-  { name: 'pan', icon: PanIcon, title: 'Pan (H)' },
-  { name: 'conduit', icon: ConduitIcon, title: 'Conduit' },
-  { name: 'text', icon: TextIcon, title: 'Text' },
-  { name: 'draw', icon: DrawIcon, title: 'Draw' },
-  { name: 'rectangle', icon: RectangleIcon, title: 'Rectangle' },
+  { name: 'select', icon: SelectIcon, title: 'Select Tool (V) - Click and drag to select items' },
+  { name: 'pan', icon: PanIcon, title: 'Pan Tool (H) - Click and drag to move around the floorplan' },
+  { name: 'conduit', icon: ConduitIcon, title: 'Conduit Tool - Draw conduit paths between devices' },
+  { name: 'text', icon: TextIcon, title: 'Text Tool - Add text labels to the floorplan' },
+  { name: 'draw', icon: DrawIcon, title: 'Draw Tool - Draw freehand lines and shapes' },
+  { name: 'rectangle', icon: RectangleIcon, title: 'Rectangle Tool - Draw rectangular selection areas' },
 ];
 
 // Split tools for responsive mobile view
@@ -63,7 +63,12 @@ const TooltipWrapper: React.FC<{ title: string, children: React.ReactNode }> = (
   return (
     <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       {children}
-      {show && <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded-md pointer-events-none whitespace-nowrap z-20">{title}</div>}
+      {show && (
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg pointer-events-none whitespace-nowrap z-20 shadow-lg border border-gray-700 max-w-xs">
+          {title}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+        </div>
+      )}
     </div>
   )
 };
@@ -114,12 +119,12 @@ const Toolbar: React.FC<ToolbarProps> = ({
   return (
     <div className="fixed bottom-4 left-2 right-2 md:left-1/2 md:-translate-x-1/2 md:w-auto md:right-auto p-2 md:p-1.5 bg-surface/90 backdrop-blur-md rounded-xl border border-white/10 flex flex-row items-center gap-2 md:gap-1 shadow-2xl z-50 overflow-x-auto">
       <div className="flex flex-row items-center gap-2 md:gap-1 whitespace-nowrap">
-        <TooltipWrapper title="Undo (Ctrl+Z)">
+        <TooltipWrapper title="Undo (Ctrl+Z) - Revert the last action">
             <button onClick={onUndo} disabled={!canUndo} className="p-3 rounded-lg hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 <UndoIcon className="w-5 h-5" />
             </button>
         </TooltipWrapper>
-        <TooltipWrapper title="Redo (Ctrl+Y)">
+        <TooltipWrapper title="Redo (Ctrl+Y) - Restore the last undone action">
             <button onClick={onRedo} disabled={!canRedo} className="p-3 rounded-lg hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 <RedoIcon className="w-5 h-5" />
             </button>
@@ -137,7 +142,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             {primaryTools.map(({ name, icon: Icon, title }) => renderToolButton(name, Icon, title))}
             
             <div className="relative" ref={moreToolsRef}>
-                <TooltipWrapper title="More Tools">
+                <TooltipWrapper title="More Tools - Access additional drawing tools">
                     <button
                         onClick={(e) => { e.stopPropagation(); setIsMoreToolsOpen(prev => !prev); }}
                         className={`p-3 rounded-lg transition-colors ${isSecondaryToolSelected ? 'bg-primary-600 text-white' : 'hover:bg-white/10'}`}
@@ -168,14 +173,14 @@ const Toolbar: React.FC<ToolbarProps> = ({
 
         <div className="w-px h-6 bg-white/10 mx-1"></div>
 
-        <TooltipWrapper title="Add Item">
+        <TooltipWrapper title="Add Item - Create new devices and markers">
           <button onClick={onAddItem} className="p-3 rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors">
             <AddIcon className="w-5 h-5" />
           </button>
         </TooltipWrapper>
       
         <div className="relative group" ref={inventoryRef}>
-            <TooltipWrapper title="Place from Inventory">
+            <TooltipWrapper title="Place from Inventory - Place unplaced devices on the floorplan">
                 <button
                     onClick={(e) => {
                         e.stopPropagation();
@@ -209,31 +214,33 @@ const Toolbar: React.FC<ToolbarProps> = ({
 
         <div className="hidden md:flex items-center gap-1">
           <div className="w-px h-6 bg-white/10 mx-1"></div>
-          <TooltipWrapper title="Bring to Front">
+          <TooltipWrapper title="Bring to Front - Move selected items to the front layer">
           <button onClick={onBringToFront} disabled={selectedEditIds.length === 0} className="p-3 rounded-lg hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             <BringToFrontIcon className="w-5 h-5" />
           </button>
           </TooltipWrapper>
-          <TooltipWrapper title="Send to Back">
+          <TooltipWrapper title="Send to Back - Move selected items to the back layer">
           <button onClick={onSendToBack} disabled={selectedEditIds.length === 0} className="p-3 rounded-lg hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             <SendToBackIcon className="w-5 h-5" />
           </button>
           </TooltipWrapper>
           <div className="w-px h-6 bg-white/10 mx-1"></div>
-          <TooltipWrapper title="Zoom Out">
+          <TooltipWrapper title="Zoom Out - Decrease zoom level">
             <button onClick={onZoomOut} className="p-3 rounded-lg hover:bg-white/10 transition-colors">
               <ZoomOutIcon className="w-5 h-5" />
             </button>
           </TooltipWrapper>
-          <span className="text-sm font-mono w-16 text-center">{Math.round(zoomLevel * 100)}%</span>
-          <TooltipWrapper title="Zoom In">
+          <TooltipWrapper title={`Current zoom level: ${Math.round(zoomLevel * 100)}%`}>
+            <span className="text-sm font-mono w-16 text-center cursor-help">{Math.round(zoomLevel * 100)}%</span>
+          </TooltipWrapper>
+          <TooltipWrapper title="Zoom In - Increase zoom level">
             <button onClick={onZoomIn} className="p-3 rounded-lg hover:bg-white/10 transition-colors">
               <ZoomInIcon className="w-5 h-5" />
             </button>
           </TooltipWrapper>
           <div className="w-px h-6 bg-white/10 mx-1"></div>
         </div>
-        <TooltipWrapper title="Download PDF">
+        <TooltipWrapper title="Download PDF - Export floorplan with equipment as PDF">
           <button onClick={onDownload} disabled={isProcessing} className="flex items-center gap-2 p-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed">
             {isProcessing ? (
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>

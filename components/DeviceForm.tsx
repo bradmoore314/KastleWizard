@@ -1,7 +1,7 @@
 
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { DeviceEdit, DeviceType, DeviceData, DeviceTypeFormConfig, FormFieldConfig, EquipmentImage, DeviceFormConfig, CustomField, MiscellaneousData } from '../types';
+import { DeviceEdit, DeviceType, DeviceData, DeviceTypeFormConfig, FormFieldConfig, EquipmentImage, DeviceFormConfig, CustomField, MiscellaneousData, ComponentStatus } from '../types';
 import { Trash2, PlusCircle, EyeIcon, EyeOffIcon, Plus, GripVerticalIcon, ChevronDown, Camera as CameraIcon, UploadCloud, Palette } from 'lucide-react';
 import { CloseIcon } from './Icons';
 import { useAppState, useAppDispatch } from '../state/AppContext';
@@ -48,6 +48,36 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ devices, onClose, isCreating, o
 
   const deviceIdsKey = useMemo(() => deviceList.map(d => d.id).join(','), [deviceList]);
 
+  // Helper function to convert legacy boolean values to ComponentStatus
+  const convertLegacyBooleanToComponentStatus = (key: string, value: any): ComponentStatus | any => {
+    // List of fields that should be converted from boolean to ComponentStatus
+    const componentStatusFields = ['door_contact', 'rex', 'push_to_exit', 'intercom_buzzer', 'crash_bar'];
+    
+    if (componentStatusFields.includes(key) && typeof value === 'boolean') {
+      return {
+        hasComponent: value,
+        isExisting: true // Default to existing for backward compatibility
+      };
+    }
+    
+    return value;
+  };
+
+  // Helper function to convert ComponentStatus back to legacy boolean format for saving
+  const convertComponentStatusToLegacyBoolean = (key: string, value: any): any => {
+    const componentStatusFields = ['door_contact', 'rex', 'push_to_exit', 'intercom_buzzer', 'crash_bar'];
+    
+    if (componentStatusFields.includes(key) && value && typeof value === 'object' && 'hasComponent' in value) {
+      // Save both the legacy boolean and the new ComponentStatus for backward compatibility
+      return {
+        [key]: value.hasComponent, // Legacy boolean field
+        [`${key}_status`]: value   // New ComponentStatus field
+      };
+    }
+    
+    return { [key]: value };
+  };
+
   useEffect(() => {
     if (!deviceList.length || !deviceType) return;
 
@@ -63,12 +93,18 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ devices, onClose, isCreating, o
                 );
 
                 if (allSame) {
-                    (initialData as any)[key] = firstValue;
+                    (initialData as any)[key] = convertLegacyBooleanToComponentStatus(key, firstValue);
                 }
             }
         }
     } else {
-        initialData = { ...deviceList[0].data };
+        const deviceData = { ...deviceList[0].data };
+        // Convert legacy boolean values to ComponentStatus format
+        for (const key in deviceData) {
+            if (Object.prototype.hasOwnProperty.call(deviceData, key)) {
+                (initialData as any)[key] = convertLegacyBooleanToComponentStatus(key, (deviceData as any)[key]);
+            }
+        }
     }
     
     setFormData(initialData);
@@ -135,9 +171,14 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ devices, onClose, isCreating, o
         changedFields.forEach(field => {
             const config = deviceConfig.fields[field];
             let value = formData[field];
+            
             if (config?.type === 'number') {
                 const num = Number(value);
                 (dataToUpdate as any)[field] = isNaN(num) ? undefined : num;
+            } else if (config?.type === 'component_status') {
+                // Convert ComponentStatus to both legacy boolean and new format
+                const convertedData = convertComponentStatusToLegacyBoolean(field, value);
+                Object.assign(dataToUpdate, convertedData);
             } else {
                 (dataToUpdate as any)[field] = value;
             }
@@ -157,6 +198,10 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ devices, onClose, isCreating, o
             if (config?.type === 'number') {
                 const num = Number(finalData[key]);
                 finalData[key] = isNaN(num) ? undefined : num;
+            } else if (config?.type === 'component_status') {
+                // Convert ComponentStatus to both legacy boolean and new format
+                const convertedData = convertComponentStatusToLegacyBoolean(key, finalData[key]);
+                Object.assign(finalData, convertedData);
             }
         });
 
@@ -412,6 +457,54 @@ const DeviceForm: React.FC<DeviceFormProps> = ({ devices, onClose, isCreating, o
                 <div role="group" aria-labelledby={labelId} className="flex gap-2">
                     <button type="button" onClick={() => handleChange(key, true)} className={`flex-1 py-2 rounded-md transition-colors text-sm ${value === true ? 'bg-primary-600 text-white' : 'bg-background hover:bg-white/10'} ${!hasValue && isBulkEdit ? 'border border-dashed border-primary-500' : ''}`} id={`${labelId}-yes`}>Yes</button>
                     <button type="button" onClick={() => handleChange(key, false)} className={`flex-1 py-2 rounded-md transition-colors text-sm ${value === false ? 'bg-red-600 text-white' : 'bg-background hover:bg-white/10'} ${!hasValue && isBulkEdit ? 'border border-dashed border-primary-500' : ''}`} id={`${labelId}-no`}>No</button>
+                </div>
+            );
+            break;
+        case 'component_status':
+            // Handle component status with existing vs. future distinction
+            const statusValue = value as ComponentStatus | undefined;
+            const hasComponent = statusValue?.hasComponent ?? false;
+            const isExisting = statusValue?.isExisting ?? true; // Default to existing for backward compatibility
+            
+            inputElement = (
+                <div role="group" aria-labelledby={labelId} className="space-y-2">
+                    {/* Component exists/will exist toggle */}
+                    <div className="flex gap-2">
+                        <button 
+                            type="button" 
+                            onClick={() => handleChange(key, { hasComponent: true, isExisting })} 
+                            className={`flex-1 py-2 rounded-md transition-colors text-sm ${hasComponent ? 'bg-primary-600 text-white' : 'bg-background hover:bg-white/10'} ${!hasValue && isBulkEdit ? 'border border-dashed border-primary-500' : ''}`}
+                        >
+                            Yes
+                        </button>
+                        <button 
+                            type="button" 
+                            onClick={() => handleChange(key, { hasComponent: false, isExisting: true })} 
+                            className={`flex-1 py-2 rounded-md transition-colors text-sm ${!hasComponent ? 'bg-red-600 text-white' : 'bg-background hover:bg-white/10'} ${!hasValue && isBulkEdit ? 'border border-dashed border-primary-500' : ''}`}
+                        >
+                            No
+                        </button>
+                    </div>
+                    
+                    {/* Existing vs. Future toggle (only show if component exists/will exist) */}
+                    {hasComponent && (
+                        <div className="flex gap-2">
+                            <button 
+                                type="button" 
+                                onClick={() => handleChange(key, { hasComponent: true, isExisting: true })} 
+                                className={`flex-1 py-2 rounded-md transition-colors text-xs ${isExisting ? 'bg-green-600 text-white' : 'bg-background hover:bg-white/10'}`}
+                            >
+                                Existing
+                            </button>
+                            <button 
+                                type="button" 
+                                onClick={() => handleChange(key, { hasComponent: true, isExisting: false })} 
+                                className={`flex-1 py-2 rounded-md transition-colors text-xs ${!isExisting ? 'bg-blue-600 text-white' : 'bg-background hover:bg-white/10'}`}
+                            >
+                                Future Install
+                            </button>
+                        </div>
+                    )}
                 </div>
             );
             break;
