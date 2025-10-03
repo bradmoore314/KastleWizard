@@ -732,8 +732,8 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
         const scaleFactor = 1.1;
         const newZoom = e.deltaY < 0 ? zoom * scaleFactor : zoom / scaleFactor;
 
-        // Ensure zoom stays within reasonable bounds
-        const clampedZoom = Math.max(0.25, Math.min(4, newZoom));
+        // Ensure zoom stays within reasonable bounds for quality
+        const clampedZoom = Math.max(0.1, Math.min(5, newZoom));
 
         const rect = containerRef.current!.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
