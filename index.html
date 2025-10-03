@@ -2,7 +2,7 @@
 <html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Kastle Systems | Floor Plan Tool</title>
     
     <!-- PWA Manifest & Theme -->
@@ -58,6 +58,38 @@
         * {
           -webkit-overflow-scrolling: touch;
         }
+        
+        /* Prevent page zoom on touch events */
+        body {
+          touch-action: pan-x pan-y;
+          -webkit-user-select: none;
+          -webkit-touch-callout: none;
+          -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Allow zoom only on floorplan canvas */
+        .floorplan-canvas {
+          touch-action: manipulation;
+        }
+        
+        /* Prevent zoom on double-tap */
+        * {
+          -webkit-touch-callout: none;
+          -webkit-user-select: none;
+          -khtml-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+        }
+        
+        /* Allow text selection in inputs */
+        input, textarea, [contenteditable] {
+          -webkit-user-select: text;
+          -khtml-user-select: text;
+          -moz-user-select: text;
+          -ms-user-select: text;
+          user-select: text;
+        }
       }
     </style>
     
@@ -104,6 +136,42 @@
             });
         });
       }
+      
+      // Prevent page zoom on mobile devices
+      document.addEventListener('DOMContentLoaded', function() {
+        // Prevent zoom on double tap
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+          const now = (new Date()).getTime();
+          if (now - lastTouchEnd <= 300) {
+            event.preventDefault();
+          }
+          lastTouchEnd = now;
+        }, false);
+        
+        // Prevent zoom on pinch
+        document.addEventListener('gesturestart', function (event) {
+          event.preventDefault();
+        });
+        
+        document.addEventListener('gesturechange', function (event) {
+          event.preventDefault();
+        });
+        
+        document.addEventListener('gestureend', function (event) {
+          event.preventDefault();
+        });
+        
+        // Prevent zoom on wheel events outside floorplan
+        document.addEventListener('wheel', function(event) {
+          // Only prevent if not on floorplan canvas
+          if (!event.target.closest('.floorplan-canvas')) {
+            if (event.ctrlKey) {
+              event.preventDefault();
+            }
+          }
+        }, { passive: false });
+      });
     </script>
     <script type="module" src="./index.tsx"></script>
 </body>

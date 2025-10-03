@@ -1053,6 +1053,7 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
     // Touch event handlers for mobile support
     const handleTouchStart = useCallback((e: React.TouchEvent) => {
         e.preventDefault();
+        e.stopPropagation();
         if (e.touches.length === 1) {
             // Single touch - convert to mouse event
             const touch = e.touches[0];
@@ -1085,6 +1086,7 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
 
     const handleTouchMove = useCallback((e: React.TouchEvent) => {
         e.preventDefault();
+        e.stopPropagation();
         if (e.touches.length === 1 && dragState && dragState.type !== 'pinch') {
             // Single touch move - convert to mouse event
             const touch = e.touches[0];
@@ -1125,6 +1127,7 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
 
     const handleTouchEnd = useCallback((e: React.TouchEvent) => {
         e.preventDefault();
+        e.stopPropagation();
         if (e.touches.length === 0) {
             // All touches ended
             if (dragState?.type === 'pinch') {
@@ -1174,7 +1177,7 @@ const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>((props, ref) => {
     return (
         <div 
             ref={containerRef}
-            className="w-full h-full bg-gray-600 overflow-hidden relative"
+            className="w-full h-full bg-gray-600 overflow-hidden relative floorplan-canvas"
             style={{ cursor: props.selectedTool === 'pan' ? 'grab' : (dragState?.editId === 'pan' ? 'grabbing' : (props.selectedTool === 'select' ? 'default' : 'crosshair')) }}
             onWheel={handleWheel}
             onMouseDown={handleMouseDown}
